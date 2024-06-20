@@ -38,3 +38,7 @@ dotnet sln add HelloCS
 ### Notes
 * dotnet CLI executes the app from the <projectname> folder.
 * Visual Studio 2022 executes the app from the <projectname>\bin\Debug\net8.0 folder.
+### Summary of other project types
+![Project template names for various code editors](images/project-template-names-for-various-code-editors.png)
+* Summary of project template defaults, options, and switches: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/ch01-project-options.md)
+
