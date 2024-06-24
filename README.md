@@ -95,3 +95,114 @@ string xml = """
 ### Passing arguments to a console app
 * Command-line arguments are seperated by **spaces**.
 * To include spaces, enclose the argument value in **single or double quotes**.
+
+# Chapter 3: Controlling Flow, Converting Types, and Handling Exceptions
+## Operating on variables
+### Exploring unary operators
+```csharp
+int a = 3;
+// The ++ operator executes after the assignment (aka postfix operator).
+int b = a++; // b is 3
+```
+* **Good Practice:** Never combine the use of the ++ and -- operators with an assignement operator, =. Perform the operations as separate statements.
+### Exploring logical operators (&, |, ^)
+* Operate on **Boolean** values.
+* For the **XOR ^** logical operator, either operand can be true **(but not both)** for the result to be true.
+### Exploring conditional logical operators (&&, ||)
+* **Good Practice:** It is safest to avoid conditional logical operators when used in combination with functions that cause side effects.
+### Exploring bitwise and binary shift operators (&, |, <<, >>)
+* Binary shift operators **(<<, >>)** can perform some common arithmetic calculations (e.g. x * 2, x / 2) much faster than traditional operators.
+
+## Understanding selection statements
+### Pattern matching with the if statement
+* The `if` statement can use the `is` **keyword** in combination with declaring a local variable.
+```csharp
+object o = 3;
+
+if (o is int i)
+{
+    // ...
+}
+```
+### Branching with the switch statement
+* **Good Practice:** The `goto` keyword can be a good solution to code logic in some scenarios. But, you **should use it sparingly**.
+### Pattern matching with the switch statement
+* The `switch` statement supports pattern matching.
+```csharp
+switch(animal)
+{
+    // case Cat fourLeggedCat when fourLeggedCat.Legs == 4:
+
+    // Alternative: A more concise pattern-matching syntax.
+    case Cat { Legs: 4 } fourLeggedCat:
+        // ...
+        break;
+    case Spider spider:
+        // ...
+        break;
+    default:
+        // ...
+        break;
+}
+```
+### Simplifying switch statements with switch expressions
+* Switch expressions can be used where **all cases return a value to set a single variables**. It uses a **lambda**, **=>**, to indicate a **return value**.
+
+## Understanding iteration statements
+### Looping with the foreach statement
+* If the sequence structure of the `foreach` statement is modified during iteration, for example, by adding or removing an item, then **an exception will be thrown**.
+### Understanding how foreach works internally
+* `foreach` statement will work on any type that implements `IEnumerable` interface.
+
+## Storing multiple values in an array
+### Working with single-dimensional arrays
+![Visualization of an array of four string values](images/visualization-of-an-array-of-four-string-values.png)
+* Arrays are always of a fixed size at the time of memory allocation.
+### Working with multi-dimensional arrays
+![Visualization of a two dimensional array](images/visualization-of-a-two-dimensional-array.png)
+* To store **a grid of values**.
+* Helpful methods that can discover the lower and upper bounds.
+* You can use a `foreach` statement to enumerate all the items in a multi-dimensional array.
+```csharp
+// To get the first index of the first dimension.
+int firstIndex = mdArray.GetLowerBound(0);
+// To get the last index of the first dimension.
+int lastIndex = mdArray.GetUpperBound(0);
+```
+### Working with jagged arrays
+![Visualization of a jagged array](images/visualization-of-a-jagged-array.png)
+* Use jagged arrays (aka **array of arrays**, e.g. `jagged[][]`) when the number of items stored in each dimension is different.
+### List pattern matching with arrays
+![Examples of list pattern matching](images/examples-of-list-pattern-matching.png)
+### Summarizing arrays
+* **Arrays** are useful for **temporarily** storing multiple items. **Collections** are more **flexible** option when adding and removing items dynamically.
+* Any sequence of items can convert into an array using the `ToArray` extension method.
+
+## Casting and converting between types
+### How negative numbers are represented in binary
+* Negative aka signed numbers use the **first bit** to represent negativity.
+### Converting with the System.Convert type
+* An alternative to using the cast operator is to use the `System.Convert` type.
+```csharp
+double g = 9.8;
+// int h = (int)g; // Using the cast operator.
+int h = Convert.ToInt32(g); // Using the System.Convert.
+```
+* Important differences betweem casting and converting:
+    * Converting rounds the double value 9.8 up to 10 instead of trimming the part after the decimal point.
+    * Casting can allow overflows while converting will throw an exception.
+### Rounding numbers and the default rounding rules
+* **System.Convert**'s rounding rule is the **Banker's rounding**. This rule reduces bias by alternating when it rounds toward or away from zero.
+### Converting from a binary object to a string
+* **Base64** encoding is used to represent binary object (e.g. image, video) in a text-based format.
+### Parsing from strings to numbers or dates and times
+* The opposite of `ToString` is `Parse`.
+* **Good Practice:** Use the standard date and time format specifiers: [🔗](https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings#table-of-format-specifiers)
+
+## Checking for overflow
+### Throwing overflow exceptions with the checked statement
+* `checked` statement tells .NET to **throw an exception** when an overflow happens.
+* `checked` statement is used to change the default overflow behavior at **runtime**.
+### Disabling compiler overflow checks with the unchecked statement
+* `unchecked` statement is used to change the default overflow behavior at **compile-time**.
+    
