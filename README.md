@@ -42,6 +42,9 @@ dotnet sln add HelloCS
 ![Project template names for various code editors](images/project-template-names-for-various-code-editors.png)
 * Summary of project template defaults, options, and switches: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/ch01-project-options.md)
 
+## Explore topics
+* Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-1---hello-c-welcome-net)
+
 # Chapter 2: Speaking C#
 ## Discovering your C# compiler version
 ### Enabling a specific language version compiler
@@ -85,6 +88,7 @@ string xml = """
 * Dynamic types are most useful when interoperating with non-.NET systems.
 ### Formatting using interpolated strings
 * They can't be read from resource files to be localized.
+
 ## Exploring more about console apps
 ### Custom number formatting
 ![Custom numeric format codes](images/custom-numeric-format-codes.png)
@@ -95,6 +99,9 @@ string xml = """
 ### Passing arguments to a console app
 * Command-line arguments are seperated by **spaces**.
 * To include spaces, enclose the argument value in **single or double quotes**.
+
+## Explore topics
+* Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-2---speaking-c)
 
 # Chapter 3: Controlling Flow, Converting Types, and Handling Exceptions
 ## Operating on variables
@@ -205,4 +212,67 @@ int h = Convert.ToInt32(g); // Using the System.Convert.
 * `checked` statement is used to change the default overflow behavior at **runtime**.
 ### Disabling compiler overflow checks with the unchecked statement
 * `unchecked` statement is used to change the default overflow behavior at **compile-time**.
-    
+
+## Explore topics
+* Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-3---controlling-flow-converting-types-and-handling-exceptions)
+
+# Chapter 4: Writing, Debugging, and Testing Functions
+## Writing functions
+### What is automatically generated for a local function?
+* Local functions have limitations, like they **cannot have XML comments** to document them.
+### What is automatically generated for a static function?
+* When you use a separate file to define a `partial Program` class with `static` functions, the compiler merges your function as a memnber of the `Program` class **at the same level as** the \<Main>$method.
+### A brief aside about arguments and parameters
+* **Parameter** is a **variable** in a function definition.
+* **Argument** is the **data** you pass into the method's parameters.
+### Documenting functions with XML comments
+* This feature is **primarily** designed to be used with a tool that converts the comments into documentation, like **Sandcastle**.
+
+## Hot reloading during development
+### Hot reloading using Visual Studio Code and dotnet watch
+```bash
+# Command to activate Hot Reload.
+dotnet watch [run]
+```
+
+## Logging during development and runtime
+### Understanding logging options
+* **Common logging frameworks:** Apache log4net, NLog, **Serilog**
+### Instrumenting with Debug and Trace
+* `Debug` class is used to add loggging that gets written only during **development**.
+* `Trace` class is used to add loggging that gets written during **both development and runtime**.
+* `Debug` and `Trace` classes write to any trace listener.
+* Trace listener is a type that can be configured to write output anywhere you like.
+### Configuring trace listeners
+```bash
+# With the Debug configuration, both Debug and Trace are active and will write to any trace listeners.
+# With the Release configuration, only Trace will write to any trace listeners.
+dotnet run --configuration (Debug|Release)
+```
+### Adding packages to a project in Visual Studio Code
+```bash
+# Add a reference to a NuGet package to your project file.
+dotnet add package <PACKAGE_NAME>
+
+# Add a project-to-project reference to your project file.
+dotnet add reference <PROJECT_NAME>
+```
+### Logging information about your source code
+* In C# 10 and later, you can get more logging information from the compiler by decorating function parameters with special attributes.
+![Attributes to get information about the method caller](images/attributes-to-get-information-about-the-method-caller.png)
+
+## Unit testing
+* **xUnit** is more extensible and has better community support.
+
+## Throwing and catching exceptions in functions
+* You should only catch and handle an exception if you have enough information to mitigate the issue.
+### Throwing exceptions using guard clauses
+![Common guard clauses](images/common-guard-clauses.png)
+### Rethrowing exceptions
+* 3 ways to rethrow:
+    1. `throw`
+    2. `throw ex` - This is **usually poor practice**, but can be useful when you want to deliberately remove that information when it contains sensitive data.
+    3. throw a new exception, and pass the caught exception as the `innerException` parameter.
+
+## Explore topic
+* Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-4---writing-debugging-and-testing-functions)
