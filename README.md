@@ -352,7 +352,7 @@ public Person this[int index]
 * Record types are defined by using the `record` keyword.
 * It makes the whole object **immutable**.
 * It **acts like a value** when compared.
-* To change any state after instantiation, you create new records from existing ones using the `with` keyowrd.
+* To change any state after instantiation, you create new records from existing ones using the `with` keyword.
 ```csharp
 ImmutableVehicle repaintedCar = car with
 {
@@ -363,11 +363,12 @@ ImmutableVehicle repaintedCar = car with
 ```csharp
 // Simpler syntax to define a record that auto-generates the
 // properties, constructor, and deconstructor.
-public record ImmutableAnimal(string Name, string Species);
+// The class keyword is optional.
+public record class ImmutableAnimal(string Name, string Species);
 ```
 ### Defining a primary constructor for a class
 * Parameters of a class type with a primary constructor don't become public properties automatically.
-```csharp
+```cs
 public class Headset(string manufacturer, string productName)
 {
     public string Manufacturer { get; set; } = manufacturer;
@@ -377,3 +378,5 @@ public class Headset(string manufacturer, string productName)
     public Headset() : this("Microsoft", "HoloLens") { }
 }
 ```
+## Explore topics
+Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-5---building-your-own-types-with-object-oriented-programming)
