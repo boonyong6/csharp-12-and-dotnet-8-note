@@ -18,6 +18,17 @@ code --install-extension icsharpcode.ilspy-vscode
 
 ## Understanding .NET
 
+### Listing and removing versions of .NET
+
+```bash
+dotnet --list-sdks
+dotnet --list-runtimes
+dotnet --info
+```
+
+- On Windows, use the **Apps & features** to remove .NET SDKs.
+- On Linux: [🔗](https://learn.microsoft.com/en-us/dotnet/core/install/remove-runtime-sdk-versions?pivots=os-linux)
+
 ### Understanding intermediate language
 
 - The **C# compiler (Roslyn)** converts source code into intermediate language (IL) code and stores it in an assembly (DLL or EXE).
@@ -56,7 +67,7 @@ dotnet sln add HelloCS
 
 ![Project template names for various code editors](images/project-template-names-for-various-code-editors.png)
 
-- Summary of project template defaults, options, and switches: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/ch01-project-options.md)
+- Summary of project template defaults, options, and switches: [🔗](https://githu6.com/markjprice/cs12dotnet8/blob/main/docs/ch01-project-options.md)
 
 ## Explore topics
 
@@ -825,3 +836,169 @@ Featured **StyleCop**: [🔗](https://github.com/markjprice/cs12dotnet8/blob/mai
 ## Explore topics
 
 Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-6---implementing-interfaces-and-inheriting-classes)
+
+# Chapter 7: Packaging and Distributing .NET Types
+
+## The road to .NET 8
+
+- .NET 5 removed the need for .NET Standard because all project types can now target a single version of .NET.
+
+### Checking your .NET SDKs for updates
+
+```bash
+# To check the versions of .NET SDKs and runtimes.
+dotnet sdk check
+```
+
+## Understanding .NET components
+
+### Dependent assemblies
+
+- Circular references are often a warning sign of poor code design.
+
+### Namespaces and types in assemblies
+
+- Many common .NET types are in the `System.Runtime.dll` assembly.
+
+### Relating C# keywords to .NET types
+
+- All C# keywords that represent types are aliases for a .NET type.
+
+### Understanding defaults for class libraries with different SDKs
+
+- **Good Practice:** Always check the target framework of a class library and then manually change it to something more appropriate if necessary.
+
+### Controlling the .NET SDK
+
+- You can control the .NET SDK used by default for a solution or project by using a `global.json` file.
+
+```bash
+# To create a global.json file that forces the use of the latest .NET Core 6.0 SDK.
+dotnet new globaljson --sdk-version 6.0.314
+```
+
+## Publishing your code for deployment
+
+### Three ways to publish and deploy a .NET application
+
+1. **Framework-dependent deployment (FDD)** - You deploy a DLL that must be executed by the dotnet cli.
+2. **Framework-dependent executable (FDE)** - You deploy an EXE that can be run directly from the command line.
+3. **Self-contained**
+
+### Creating a console app to publish
+
+- **Runtime identifier (RID) values:** `win-x64`, `osx-x64`, `osx-arm64`, `linux-x64`, `linux-arm64`.
+
+### Getting information about .NET and its environment
+
+```bash
+dotnet --info
+```
+
+### Publishing a self-contained app
+
+```bash
+# To build and publish the self-contained release version of the application.
+dotnet publish -c Release -r <RID> --self-contained
+```
+
+### Publishing a single-file app
+
+```bash
+# Prerequisite: .NET must be already installed on the host.
+# To publish the application as a single file (if possible). The .pdb file is a program debug database file that stores debugging information.
+dotnet publish -r <RID> -c Release --no-self-contained -p:PublishSingleFile=true
+```
+
+```xml
+<!-- In .csproj file -->
+
+<!-- To embed the .pdb file in the .exe file -->
+<DebugType>embedded</DebugType>
+```
+
+### Reducing the size of apps using app trimming
+
+- **Partial trimming:** By not packaging unused assemblies (aka assembly-level trimming).
+- **Full trimming:** By not packaging unused types and members (aka Type-level and member-level trimming). It's the **default** trim mode in **.NET 6 or later**.
+- **Limitation:** If your code is **dynamic**, perhaps using **reflection**, then it **might not work correctly**.
+
+```xml
+<!-- First way, using .csproj file -->
+
+<!-- Enable trimming. -->
+<PublishTrimmed>true</PublishTrimmed>
+<!-- Set trim mode to either "full" or "partial". -->
+<TrimMode>partial</TrimMode>
+```
+
+```bash
+# Second way, using dotnet cli
+
+dotnet publish -r <RID> -c Release -p:PublishTrimmed=True
+dotnet publish -r <RID> -c Release -p:PublishTrimmed=True -p:TrimMode=partial
+```
+
+### Controlling where build artifact are created
+
+```bash
+# To control where build artifacts are created. (Introduced with .NET 8)
+dotnet new buildprops --use-artifacts
+```
+
+## Native ahead-of-time (AOT) compilation
+
+- Compiles IL code to native code at **the time of publishing**.
+- AOT assemblies must target a specific runtime environment like Windows x64 or Linux Arm.
+
+### Limitations of native AOT
+
+- No dynamic loading of assemblies.
+- No runtime code generation.
+- Requires trimming.
+- Must be self-contained (larger file size).
+
+### Requirements for native AOT
+
+- On Windows, you must install the Visual Studio 2022 Desktop development with C++ workload with all default components.
+- **Warning:** Cross-platform native AOT publishing is not supported. You must run the publish on the operating system that you will deploy to.
+
+### Enabling native AOT for a project
+
+```xml
+<!-- In .csproj -->
+<PublishAot>true</PublishAot>
+```
+
+### Publishing a native AOT project
+
+- If your project does not produce any AOT warnings at publish time, you can then be confident that your service will work.
+
+## Decompiling .NET assemblies
+
+### Viewing source links with Visual Studio 2022
+
+- A feature that allow you to view the original source code using source links.
+- Not available in Visual Studio Code.
+
+## Packaging your libraries for NuGet distribution
+
+### Packaging a library for NuGet
+
+- Project file's property (aka MSBuild Property) reference: [🔗](https://learn.microsoft.com/en-us/nuget/reference/msbuild-targets#pack-target)
+
+```bash
+# To create a package on build (Assuming <GeneratePackageOnBuild> is set to true in the project file).
+dotnet build -c Release
+
+# To create a package manually.
+dotnet pack -c Release
+```
+
+### Publishing a package to a private NuGet feed
+
+- Learn more: [🔗](https://learn.microsoft.com/en-us/nuget/hosting-packages/overview)
+
+## Explore topics
+
+- Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-7---packaging-and-distributing-net-types)
