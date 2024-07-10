@@ -69,7 +69,9 @@ dotnet sln add HelloCS
 
 - Summary of project template defaults, options, and switches: [🔗](https://githu6.com/markjprice/cs12dotnet8/blob/main/docs/ch01-project-options.md)
 
-## Explore topics
+## Practicing and exploring
+
+### Explore topics
 
 - Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-1---hello-c-welcome-net)
 
@@ -156,7 +158,9 @@ string xml = """
 - Command-line arguments are separated by **spaces**.
 - To include spaces, enclose the argument value in **single or double quotes**.
 
-## Explore topics
+## Practicing and exploring
+
+### Explore topics
 
 - Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-2---speaking-c)
 
@@ -324,7 +328,9 @@ int h = Convert.ToInt32(g); // Using the System.Convert.
 
 - `unchecked` statement is used to change the default overflow behavior at **compile-time**.
 
-## Explore topics
+## Practicing and exploring
+
+### Explore topics
 
 - Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-3---controlling-flow-converting-types-and-handling-exceptions)
 
@@ -413,7 +419,9 @@ dotnet add reference <PROJECT_NAME>
   2. `throw ex` - This is **usually poor practice**, but can be useful when you want to deliberately remove that information when it contains sensitive data.
   3. throw a new exception, and pass the caught exception as the `innerException` parameter.
 
-## Explore topic
+## Practicing and exploring
+
+### Explore topic
 
 - Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-4---writing-debugging-and-testing-functions)
 
@@ -561,7 +569,9 @@ public class Headset(string manufacturer, string productName)
 }
 ```
 
-## Explore topics
+## Practicing and exploring
+
+### Explore topics
 
 Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-5---building-your-own-types-with-object-oriented-programming)
 
@@ -833,7 +843,9 @@ Employee? aliceAsEmployee = aliceToPerson as Employee;
 
 Featured **StyleCop**: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/ch06-writing-better-code.md)
 
-## Explore topics
+## Practicing and exploring
+
+### Explore topics
 
 Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-6---implementing-interfaces-and-inheriting-classes)
 
@@ -999,6 +1011,165 @@ dotnet pack -c Release
 
 - Learn more: [🔗](https://learn.microsoft.com/en-us/nuget/hosting-packages/overview)
 
-## Explore topics
+## Practicing and exploring
+
+### Explore topics
 
 - Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-7---packaging-and-distributing-net-types)
+
+### Porting from .NET Framework to modern .NET
+
+- Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/ch07-porting.md)
+
+### Creating source generators
+
+- Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/ch07-source-generators.md)
+- Examples: [🔗](https://github.com/amis92/csharp-source-generators)
+
+# Chapter 8: Working with Common .NET Types
+
+## Working with numbers
+
+### Working with big integers
+
+```csharp
+// Usage of BigInteger type.
+BigInteger bigger = BigInteger.Parse("123456789012345678901234567890");
+```
+
+### Generating random numbers for games and similar apps
+
+- Use `Random` type in scenarios that **don't need** truly random numbers.
+- Use specialized types (i.e. `RandomNumberGenerator`) in scenarios that **do need** truly random numbers.
+
+```csharp
+// Use a same seed value to generate a same sequence of random numbers in different applications.
+Random r = new(Seed: 46378);
+```
+
+## Pattern matching with regular expressions
+
+### Understanding the syntax for a regular expression
+
+![Common regular expression symbols](images/common-regular-expression-symbols.png)
+
+![Common regular expression qualifiers](images/common-regular-expression-qualifiers.png)
+
+- \* - zero or more
+
+### Activating regular expression syntax coloring
+
+```csharp
+using System.Diagnostics.CodeAnalysis;
+
+partial class Program
+{
+    [StringSyntax(StringSyntaxAttribute.Regex)]
+    private const string DigitsOnlyText = @"^\d+$";
+}
+```
+
+### Improving regular expression performance with source generators
+
+- Under the hood, `Regex` parses the string and transforms it into an **internal tree structure** that represents the **expression** in an optimized way.
+
+```csharp
+// Compiling slows down the initial creation.
+// If you're running the regex multiple times, then it's worth compiling.
+// Only use compilation if you use .NET 6 or earlier since .NET 7 has a better solution (source generator for regex).
+Regex ageChecker = new(DigitsOnlyText, RegexOptions.Compiled);
+```
+
+- .NET 7 introduced a source generator for regular expressions.
+
+```csharp
+using System.Text.RegularExpressions;
+
+partial class Program
+{
+    // Decorate a partial method that returns Regex.
+    [GeneratedRegex(@"^\d+$", RegexOptions.IgnoreCase)]
+    private static partial Regex DigitsOnly();
+}
+```
+
+## Storing multiple objects in collections
+
+### Common features of all collections
+
+- All collections implement the `ICollection` interface.
+
+```csharp
+// Implements IEnumerable.
+public interface ICollection : IEnumerable
+{
+    // ...
+}
+```
+
+### Working with lists
+
+- **Lists** are a good choice when you want to **manually control the order of items** in a collection.
+- **Good Practice:** Use **arrays** instead of collections if the data will not change size after instantiation.
+
+### Working with dictionaries
+
+- **Dictionaries** are a good choice when each **value** has a unique sub-value (or a made-up value) that can be used as a **key** to quickly find a value in the collection.
+- Dictionaries are called **hashmaps** in other languages.
+- Items in a dictionary are instances of `KeyValuePair<TKey, TValue>`.
+
+### Sets, stacks, and queues
+
+- **Sets** are good choice when you want to perform set operations between two collections.
+- **Stacks** are good choice when you want to implement **last-in, first-out (LIFO)** behavior.
+- **Queues** are good choice when you want to implement **first-in, first-out (FIFO)** behavior.
+
+### Sorting collections
+
+- A `Stack<T>` or `Queue<T>` collection cannot be sorted.
+
+![Common auto-sorting collections](images/common-auto-sorting-collections.png)
+
+### Specialized collections
+
+- `LinkedList<T>` provide **better performance** compared to `List<T>` where you will frequently insert and remove items from the **middle of the list**.
+
+### Read-only, immutable, and frozen collections
+
+- Generic collections like `List<T>` and `Dictionary<TKey, TValue>` have an `AsReadOnly` method to create a `ReadOnlyCollection<T>` that references the original collection.
+- If the original collection has items added or removed, the `ReadOnlyCollection<T>` will see those changes.
+- **Immutable collection** have a method named Add that returns a new immutable collection with the new item in it.
+- **Generic collections** have some potential performance issues:
+  1. Since types used for keys and values could be any type, the .NET team cannot optimize the algorithm.
+  2. Collections are dynamic, which hinder the potential optimization.
+- **.NET 8** introduces **frozen collections**, which are optimized for collections that never changed.
+  1. `FrozenDictionary<TKey, TValue>`
+  2. `FrozenSet<T>`
+
+### Initializing collections using collection expressions
+
+```csharp
+// With C# 11 and earlier
+int[] numbersArray11 = { 1, 3, 5 };
+List<int> numbersList11 = new() { 1, 3, 5 };
+Span<int> numbersSpan11 = stackalloc int[] { 1, 3, 5 };
+
+// With C# 12, you can now consistently use square brackets.
+int[] numbersArray12 = [ 1, 3, 5 ];
+List<int> numbersList12 = [ 1, 3, 5 ];
+Span<int> numbersSpan12 = [ 1, 3, 5 ];
+```
+
+## Working with spans, indexes, and ranges
+
+- Use `Span<T>` type to work with **a subset of array** to improve performance and resource usage.
+- Spans only work with arrays.
+- Spans provide a view into the original array without additional memory allocation.
+
+## Practicing and exploring
+
+### Working with network resources
+![Common types for working with network resources](images/common-types-for-working-with-network-resources.png)
+
+### Explore topics
+Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-8---working-with-common-net-types)
