@@ -1169,7 +1169,153 @@ Span<int> numbersSpan12 = [ 1, 3, 5 ];
 ## Practicing and exploring
 
 ### Working with network resources
+
 ![Common types for working with network resources](images/common-types-for-working-with-network-resources.png)
 
 ### Explore topics
+
 Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-8---working-with-common-net-types)
+
+# Chapter 9: Working with Files, Streams, and Serialization
+
+## Managing the filesystem
+
+### Managing directories
+
+- To manage directories, use the `Directory`, `Path`, and `Environment` static classes.
+- When constructing custom paths, makes no assumptions about the platform.
+
+### Managing paths
+
+```csharp
+// Create a zero-byte file and returns its name.
+string tempFile = GetTempFileName();
+
+// Doesn't create the file.
+string randomFileName = GetRandomFileName();
+```
+
+### Getting file information
+
+- To get more information, you can create an instance of the `FileInfo` or `DirectoryInfo` class.
+  ![Classes to get information about files and directories](images/classes-to-get-information-about-files-and-directories.png)
+- Use a `FileInfo` instance to perform **multiple actions** on a file.
+
+### Controlling how you work with files
+
+- `enum` types that control how files are opened:
+  1. `FileMode` - Controls what you want to do with the file.
+  2. `FileAccess` - Controls what level of access you need.
+  3. `FileShare` - Controls locks to allow other processes the specified level of access.
+
+```csharp
+// Control how a file is opened.
+FileStream file = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+// Use FileAttributes enum to check file attributes.
+FileInfo info = new(path);
+bool isCompressed = info.Attributes.HasFlag(FileAttributes.Compressed);
+```
+
+## Reading and writing with streams
+
+- In scenarios where there is no other system (i.e. DBMS) that "owns" the file and does the the reading and writing for you, you will **use a file stream to work directly with the file**.
+- A stream is **a sequence of bytes** that can be read from and written to.
+- In general, a stream can only be read once.
+
+### Understanding abstract and concrete streams
+
+- `Stream` is an abstract class that represents any type of stream.
+- Concrete classes that inherit from `Stream`: `FileStream`, `MemoryStream`, `BufferedStream`, `GZipStream`, and `SslStream`.
+
+### Understanding storage streams
+
+- Represent a location where the bytes will be stored.
+  ![Storage stream classes](images/storage-stream-classes.png)
+
+### Understanding function streams
+
+- Cannot exist on their own but can only be "plugged into" other streams to add functionality.
+  ![Function stream classes](images/function-stream-classes.png)
+
+### Understanding stream helpers
+
+- Helper classes that can handle common scenarios.
+  ![Stream helper classes](images/stream-helper-classes.png)
+
+### Simplifying disposal by using the using statement
+
+```csharp
+// Un-managed resources will get disposed when the current scope exit.
+using FileStream file = File.OpenWrite(path);
+using StreamWriter writer = new(file);
+```
+
+### Reading and writing with random access handles
+
+- With .NET 6 and later, there is a new API (`RandomAccess` type) for working with files without needing a file stream and in a **random access** way.
+
+## Encoding and decoding text
+
+![Common text encodings](images/common-text-encodings.png)
+
+## Serializing object graphs
+
+- **Serialization** is the process of converting a live object graph into a sequence of bytes.
+- You would use serialization **to save the current state of a live object**.
+- Two most common **text-based formats** are **XML** and **JSON**.
+- A more efficient binary formats like Protobuf used by gRPC.
+
+### Serializing as XML
+
+```csharp
+// A parameterless constructor must exist so that the XmlSerializer can call it to instantiate new Person instances during the deserialization.
+public Person() { }
+
+// We could make the XML more compact using attributes instead of elements.
+[XmlAttribute("fname")]
+public string? FirstName { get; set; }
+```
+
+- `XmlSerializer` performs a **case-insensitive match** using the property name when deserializing.
+- When using `XmlSerializer`:
+  - Only **public** fields and properties are included.
+  - The type must have a **parameterless constructor**.
+  - You can customize the output with **attributes**.
+
+### High-performance JSON processing
+
+- .NET Core 3 introduced `System.Text.Json`, which is optimized for **performance**.
+- Choose `Newtonsoft.Json` (aka Json.NET) for a **large feature set**, and `System.Text.Json` for **performance**.
+- `Newtonsoft.Json` VS `System.Text.Json`: [🔗](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/migrate-from-newtonsoft?pivots=dotnet-8-0#table-of-differences)
+
+## Working with environment variables
+
+- Use cases:
+  - To toggle between development and production configurations in ASP.NET Core web projects.
+  - To pass values needed by a process like service keys and passwords for database connection strings.
+
+### Expanding, setting, and getting an environment variables
+
+![Commands to set an environment variable on Windows](images/commands-to-set-an-environment-variable-on-windows.png)
+
+```json
+// launchSettings.json - this can be manually created in the <project_dir>/Properties folder.
+
+{
+  "profiles": {
+    "WorkingWithEnvVars": {
+      "commandName": "Project",
+      "environmentVariables": { // Set at process scope.
+        "MY_SECRET": "Alpha"
+      }
+    }
+  }
+}
+```
+
+## Practicing and exploring
+
+### Explore topics
+
+Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-9---working-with-files-streams-and-serialization)
