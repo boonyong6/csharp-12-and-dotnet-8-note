@@ -1299,14 +1299,18 @@ public string? FirstName { get; set; }
 
 ![Commands to set an environment variable on Windows](images/commands-to-set-an-environment-variable-on-windows.png)
 
-```json
-// launchSettings.json - this can be manually created in the <project_dir>/Properties folder.
+### launchSettings.json
 
+- Can be manually created in the \<ProjectDirectory>/Properties folder.
+- Environment variables are set at **process scope**.
+- Example:
+
+```json
 {
   "profiles": {
     "WorkingWithEnvVars": {
       "commandName": "Project",
-      "environmentVariables": { // Set at process scope.
+      "environmentVariables": {
         "MY_SECRET": "Alpha"
       }
     }
