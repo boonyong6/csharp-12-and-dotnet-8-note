@@ -1323,3 +1323,294 @@ public string? FirstName { get; set; }
 ### Explore topics
 
 Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-9---working-with-files-streams-and-serialization)
+
+# Chapter 10: Working with Data Using Entity Framework Core
+
+## Setting up EF Core in a .NET project
+
+### Using the lightweight ADO.NET database providers
+
+- If you use **SQL Server**, then you should use `SqlConnectionStringBuilder` class to help write a valid connection string.
+- EF Core does not yet support **ahead-of-time (AOT)** publishing.
+
+### Choosing an EF Core database provider
+
+![NuGet packages for common EF Core database providers](images/nuget-packages-for-common-ef-core-database-providers.png)
+
+## Defining EF Core models
+
+- EF Core uses a combination of **conventions**, **annotation attributes**, and **Fluent API** statements to build an entity model at runtime.
+
+### Using EF Core conventions to define the model
+
+- A table name is assumed to match the `DbSet<T>` property name (i.e. Products).
+- `string` .NET type is assumed to be a `nvarchar` type.
+- If the `[<Entity>]Id` property is an integer type or the `Guid` type, then it is also assumed to be an `IDENTITY` column, which automatically assigns value when inserting.
+
+### Using EF Core annotation attributes to define the model
+
+![Common EF Core annotation attributes](images/common-ef-core-annotation-attributes.png)
+
+![Validation annotation attributes](images/validation-annotation-attributes.png)
+
+### Using the EF Core Fluent API to define the model
+
+- Fluent API statements are written in the `OnModelCreating` method of the database context class.
+
+```csharp
+modelBuilder.Entity<Product>()
+  .Property(product => product.ProductName)
+  .IsRequired()
+  .HasMaxLength(40);
+```
+
+- Keeps the entity model class
+
+### Understanding data seeding with the Fluent API
+
+```csharp
+modelBuilder.Entity<Product>()
+  .HasData(new Product
+  {
+    ProductId = 1,
+    ProductName = "Chai",
+    UnitPrice = 8.99M
+  });
+```
+
+- Calls to `HasData` take effect either during a data migration (`dotnet ef database update`) or when you call the `Database.EnsureCreated` method.
+
+### Adding tables to the Northwind database context class
+
+```csharp
+public class DerivedDbContext : DbContext
+{
+  // ...
+
+  protected override void OnModelCreating(ModelBuilder modelBuilder)
+  {
+    // ...
+
+    // Example: Database provider-specific configuration, i.e. SQLite.
+    if (Database.ProviderName?.Contains("Sqlite") ?? false)
+    {
+      // To "fix" the lack of decimal support in SQLite.
+      modelBuilder.Entity<Product>()
+        .Property(product => product.Cost)
+        .HasConversion<double>();
+    }
+  }
+}
+```
+
+### Setting up the dotnet-ef tool
+
+- `dotnet ef` is a tool for:
+  - Creating and applying **migrations**.
+  - Generating code for a model from an existing database (aka **scaffolding**).
+
+```bash
+# List all globally installed tools.
+dotnet tool list --global
+
+# Update a tool, i.e. dotnet-ef, to the latest/specified version.
+dotnet tool update --global dotnet-ef [--version 9.0-*]
+
+# Install a tool globally.
+dotnet tool install --global dotnet-ef
+```
+
+### Scaffolding models using an existing database
+
+```bash
+# Example: Scaffold models from an existing database.
+dotnet ef dbcontext scaffold "Data Source=Northwind.db" Microsoft.EntityFrameworkCore.Sqlite --table Categories --table Products --output-dir AutoGenModels --namespace WorkingWithEFCore.AutoGen --data-annotations --context NorthwindDb
+```
+
+- `[Index]` attribute is a class-level attribute that indicates properties that should have an index when using the **Code First** approach.
+- `[InverseProperty]` attribute is used to define the **foreign key relationship**.
+
+### Configuring preconvention models
+
+```csharp
+// Example: Customize the default conventions.
+protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+{
+  configurationBuilder.Properties<string>().HaveMaxLength(50);
+  configurationBuilder.IgnoreAny<IDoNotMap>();
+}
+```
+
+## Querying EF Core models
+
+- Database context instances are designed for **short lifetimes** in a unit of work.
+
+### Getting the generated SQL
+
+```csharp
+// To output the generated SQL.
+Info($"ToQueryString: {<IQueryableInstance>.ToQueryString()}");
+```
+
+### Logging in EF Core
+
+### Filtering logs by provider-specific values
+
+- **Event ID** values and what they mean will be **specific to the EF Core provider**.
+- For example, the **event ID** for logging executing SQL statements is **20100**.
+
+```csharp
+// To use RelationalEventId enum.
+using Microsoft.EntityFrameworkCore.Diagnostics;
+
+public class DerivedDbContext : DbContext
+{
+  // ...
+
+  protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+  {
+    // ...
+
+    optionsBuilder.LogTo(WriteLine,
+      new[] { RelationalEventId.CommandExecuting })
+    #if DEBUG
+      .EnableSensitiveDataLogging() // Include SQL parameters.
+      .EnableDetailedErrors()
+    #endif
+    ;
+  }
+}
+```
+
+### Logging with query tags
+
+```csharp
+// To add SQL comments to the log.
+IQueryable<Product>? products = db.Products?
+  .TagWith("Products filtered by price and sorted.")
+  .Where(product => product.Cost > price)
+  .OrderByDescending(product => product.Cost);
+```
+
+### Getting a single entity
+
+- Two LINQ method to get a single entity:
+  1. `First` - Can match one or more entities, and return the first.
+  2. `Single` - Must match only one entity. For EF Core to know if there is more than one match is to request more than one and check.
+- **Good Practice:** If you do not need to make sure that only one entity matches, use `First` instead of `Single` to avoid retrieving two records.
+
+### Pattern matching with Like
+
+```csharp
+IQueryable<Product>? products = db.Products?
+  .Where(p => EF.Functions.Like(p.ProductName, $"%{input}%"));
+```
+
+### Defining global filters
+
+```csharp
+modelBuilder.Entity<Product>()
+  .HasQueryFilter(p => !p.Discontinued);
+```
+
+## Loading and tracking patterns with EF Core
+
+- Three loading patterns:
+  1. **Eager loading**
+  2. **Lazy loading**
+  3. **Explicit loading**
+
+### Eager loading entities using the Include extension method
+
+```csharp
+IQueryable<Category>? categories = db.Categories;
+  .Include(c => c.Products);
+```
+
+### Enabling lazy loading
+
+- To enable lazy loading:
+  1. Reference a NuGet package for proxies - `Microsoft.EntityFrameworkCore.Proxies`
+  2. Configure lazy loading to use a proxy - `optionsBuilder.UseLazyLoadingProxies()`
+
+### Explicit loading entities using the Load method
+
+- Works in a similar way to lazy loading, with the difference being that you are in control of exactly what related data is loaded and when.
+
+```csharp
+// Example: Load collection navigation property.
+CollectionEntry<Category, Product> products =
+  db.Entry(c).Collection(c2 => c2.Products);
+
+if (!products.IsLoaded) products.Load();
+
+// Example: Load reference navigation property.
+ReferenceEntry<Product, Category> categoryReference =
+  db.Entry(p).Reference(p => p.Category);
+
+if (!categoryReference.IsLoaded) categoryReference.Load();
+```
+
+### Controlling the tracking of entities
+
+- By default, EF Core assumes that you want to track entities in local memory.
+- Keyless entities, like those returned by views, are never tracked.
+- If entities already exists in the context, it will be identified and not loaded again.
+- You can **disable tracking** to load new instances of an entity for every query execution with the **latest data** values, even if the entity is already loaded.
+
+```csharp
+// To disable tracking for an individual query.
+var products = db.Products
+  .AsNoTracking()
+  .Where(p => p.UnitPrice > price)
+  .Select(p => new { p.ProductId, p.ProductName, p.UnitPrice });
+
+// To disable tracking by default for an instance of data context.
+db.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+// To disable tracking for an individual query but retain identity resolution.
+var products = db.Products
+  .AsNoTrackingWithIdentityResolution()
+  .Where(p => p.UnitPrice > price)
+  .Select(p => new { p.ProductId, p.ProductName, p.UnitPrice });
+
+// To disable tracking but perform identity resolution by default for an instance of data context.
+db.ChangeTracker.QueryTrackingBehavior =
+  QueryTrackingBehavior.NoTrackingWithIdentityResolution;
+
+// To set defaults for all new instances of a data context.
+protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+{
+  optionsBuilder.UseSqlServer(connectionString)
+    .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+}
+```
+
+### Lazy loading for no tracking queries
+
+- In EF Core 7 or earlier, if you enable no tracking, then you cannot use the lazy loading pattern.
+- EF Core 8 enables support for the lazy loading of entities that are not being tracked.
+
+## Modifying data with EF Core
+
+### More efficient updates and deletes
+
+- EF Core 7 introduced `ExecuteDelete` and `ExecuteUpdate` method that are more efficient because they do not require entities to be loaded into memory an have their changes tracked.
+- `ExecuteDelete` and `ExecuteUpdate` can only act on a single table.
+- **Warning!** If you mix traditional tracked changes with `ExecuteDelete` and `ExecuteUpdate` methods, note that they are not kept synchronized. The change tracker will not know what you have updated and deleted using those methods.
+
+### Pooling database contexts
+
+- ASP.NET Core has a feature for pooling database contexts.
+
+## Practicing and exploring
+
+### Working with transactions
+
+#### Controlling transactions using isolation levels
+
+![Controlling transactions using isolation levels](images/controlling-transactions-using-isolation-levels.png)
+
+### Explore topics
+
+Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-10---working-with-data-using-entity-framework-core)
