@@ -1614,3 +1614,61 @@ protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 ### Explore topics
 
 Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-10---working-with-data-using-entity-framework-core)
+
+# Chapter 11: Querying and Manipulating Data Using LINQ
+
+## Writing LINQ expressions
+
+### Building LINQ expressions with the Enumerable class
+
+- All **arrays** and **generic collections** support LINQ.
+
+![LINQ extension methods](images/linq-extension-methods.png)
+
+- **Good Practice:** Remember the difference between LINQ extension methods that start with `As` and `To`. Methods that start with `As`, like `AsEnumerable`, cast the sequence into a different type but **do not allocate memory**. Methods that start with `To`, like `ToList`, **allocate memory** for a new sequence of items.
+
+## LINQ in practice
+
+### Understanding deferred execution
+
+- LINQ uses deferred execution.
+
+### Lambda expressions with default parameter values.
+
+```csharp
+// Introduced with C# 12.
+var query = names.Where((string name = "Bob") => name.Length > 4);
+```
+
+## Using LINQ with EF Core
+
+### Filtering and sorting sequences
+
+- Sequences that implemented `IQueryable<T>` indicate that we use a LINQ provider (LINQ to Entities) that builds the query using expression trees.
+- Enumerating the query with foreach or calling a method such as ToArray will force the execution of the query and materialize the results.
+
+### Projecting sequences into new types
+
+- Use the `var` keyword to instantiate **anonymous types**. This is especially useful when writing LINQ queries.
+
+## Joining, grouping, and lookups
+
+### Group-joining sequences
+
+- Occasionally, we need to cast sequences using `AsEnumerable` as not all LINQ extension methods, such as `GroupJoin`, can be converted from expression trees into some other query syntax like SQL.
+
+### Grouping for lookups
+
+- `ToLookup` creates and then stores a reusable in-memory collection (dictionary-like data structure) that has entities that have been grouped.
+
+## Aggregating and paging sequences
+
+### Checking for an empty sequence
+
+- `Count`/`Length` property > `Any()` method > `Count()` method
+
+## Practicing and exploring
+
+### Explore topics
+
+Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-11---querying-and-manipulating-data-using-linq)
