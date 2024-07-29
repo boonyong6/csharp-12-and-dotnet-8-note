@@ -1672,3 +1672,34 @@ var query = names.Where((string name = "Bob") => name.Length > 4);
 ### Explore topics
 
 Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-11---querying-and-manipulating-data-using-linq)
+
+# Chapter 12: Introducing Web Development Using ASP.NET Core
+
+- Microsoft calls platforms for building applications **app models** or **workloads**.
+
+## Understanding ASP.NET Core
+
+- **ASP.NET SignalR** enables real-time communication for websites by abstracting underlying technologies and techniques, such as **WebSockets** and long polling.
+- **ASP.NET Core** consists of MVC, Web API, SignalR, Razor Pages, gRPC, and Blazor.
+
+### Classic ASP.NET versus modern ASP.NET Core
+
+- **ASP.NET Core** removes the dependency on the `System.Web.dll` assembly, which is tightly coupled to **IIS**.
+- **ASP.NET Core** is composed of **modular** lightweight packages.
+- **Kestrel** is a cross-platform, super-performant web server.
+
+### Comparison of file types used in ASP.NET Core
+
+- The naming convention for **shared** Razor files like **layouts** and **partial views** is to prefix with an **underscore _**.
+
+## Structuring projects
+
+### Structuring projects in a solution
+
+![Example project names for various project types](images/example-project-names-for-various-project-types.png)
+
+## Practicing and exploring
+
+### Explore topics
+
+- Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-12---introducing-web-development-using-aspnet-core)
