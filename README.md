@@ -1163,8 +1163,8 @@ Span<int> numbersSpan12 = [ 1, 3, 5 ];
 ## Working with spans, indexes, and ranges
 
 - Use `Span<T>` type to work with **a subset of array** to improve performance and resource usage.
-- Spans only work with arrays.
-- Spans provide a view into the original array without additional memory allocation.
+- Spans only work with **arrays**.
+- Spans provide a **view** into the original array without additional memory allocation.
 
 ## Practicing and exploring
 
