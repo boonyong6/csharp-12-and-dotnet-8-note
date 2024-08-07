@@ -1690,7 +1690,7 @@ Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book
 
 ### Comparison of file types used in ASP.NET Core
 
-- The naming convention for **shared** Razor files like **layouts** and **partial views** is to prefix with an **underscore _**.
+- The naming convention for **shared** Razor files like **layouts** and **partial views** is to prefix with an **underscore \_**.
 
 ## Structuring projects
 
@@ -1703,3 +1703,387 @@ Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book
 ### Explore topics
 
 - Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-12---introducing-web-development-using-aspnet-core)
+
+# Chapter 13: Building Websites Using ASP.NET Core Razor Pages
+
+- **ASP.NET Core Razor Pages** is suitable for building **simple dynamic websites**.
+
+## Exploring ASP.NET Core
+
+### Creating an empty ASP.NET Core project
+
+- `launchSettings.json`:
+  - Only for use during **development**.
+  - Has no effect on the production runtime.
+  - Only processed by code editors to set up **environment variables** and define **URLs** for the web server to listen on.
+  - `http` and `https` launch profiles have a `commandName` of `Project`, meaning they use the web server configured in the project to host the website, which is **Kestrel** by default.
+
+### Testing and securing the website
+
+```bash
+# To start the project with the https profile.
+dotnet run (--launch-profile|-lp) https
+```
+
+### Enabling stronger security and redirecting to a secure connection
+
+```csharp
+// In Program.cs
+
+if (!app.Environment.IsDevelopment())
+{
+  // Adds Strict-Transport-Security response header to inform browsers that the site should only be accessed using HTTPS.
+  app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+```
+
+### Controlling the hosting environment
+
+```csharp
+// To enable exception page in ASP.NET Core 5 and earlier.
+if (app.Environment.IsDevelopment())
+{
+  app.UseDeveloperExceptionPage();
+}
+
+// With ASP.NET Core 6 and later, this code is executed automatically.
+```
+
+### Enabling a website to serve static content
+
+- By convention, the static content should be stored in a directory named `wwwroot`.
+
+### Enabling static and default files
+
+```csharp
+// In Program.cs
+
+// UseDefaultFiles must come before the call to UseStaticFiles.
+app.UseDefaultFiles(); // index.html, default.html, and so on.
+app.UseStaticFiles();  // To enable the website to return static files.
+```
+
+## Exploring ASP.NET Core Razor Pages
+
+### Adding code to a Razor Page
+
+- Razor syntax is indicated by the `@` symbol.
+- **Razor Pages** are different from **Razor Views** (used in ASP.NET Core MVC):
+  - _Razor Pages_ **must have** the `@page` directive.
+  - _Razor Views_ **must not use** the `@page` directive.
+- **Razor Pages** can optionally have an `@function` section that defines:
+  - **Properties**, which can be accessed via `Model`.
+  - **Methods** named `OnGet`, `OnPost`, `OnDelete`, and so on.
+  - When you define **properties** in a `@function` block, you are adding code to an automatically **generated class** named `Pages_<RazorPageName>`, such as `Pages_Index`.
+- Use `@*` and `*@` to add comments.
+
+### Using shared layouts with Razor Pages
+
+- **Layouts** are stored in a `Shared` folder so that it can be found by convention.
+- `_Layout.cshtml` is the common name for layout.
+- `_ViewStart.cshtml` must be created to set the default layout file for all Razor Pages and MVC views.
+
+### Temporarily storing data
+
+- `ViewData`
+  - This dictionary exists during the lifetime of a **single HTTP request**.
+    ![Using ViewData to share information during a single request](images/using-viewdata-to-share-information-during-a-single-request.png)
+- `TempData`
+  - This dictionary exists during the lifetime of **an HTTP request and the next HTTP request from the same browser**.
+  - This allows a part of the website, like a controller, to store some data in it, respond to the browser with a redirect, and then another part of the website can read the data on the second request.
+    ![Using TempData to share information across two requests](images/using-tempdata-to-share-information-across-two-requests.png)
+
+### Using code-behind files with Razor Pages
+
+- `.cshtml.cs` is the file extension for Razor Pages **code-behind class files**.
+
+### Configuring files included in an ASP.NET Core project
+
+```xml
+<!-- Include the greet.proto file in the build process. -->
+<ItemGroup>
+  <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
+</ItemGroup>
+
+<!-- Remove the stylecop.json file from the build process. -->
+<ItemGroup>
+  <None Remove="stylecop.json" />
+</ItemGroup>
+
+<!-- Include the stylecop.json file in the deployment. -->
+<ItemGroup>
+  <AdditionalFiles Include="stylecop.json" />
+</ItemGroup>
+```
+
+### Project file build actions
+
+![Common build actions for ASP.NET Core project files](images/common-build-actions-for-ASP.NET-Core-project-files.png)
+
+## Using Entity Framework Core with ASP.NET Core
+
+### Enabling a model to insert entities
+
+```csharp
+// In @function { } or code-behind class file.
+
+// To connect HTML elements on the web page (.cshtml).
+[BindProperty]
+public Supplier? Supplier { get; set; }
+```
+
+```html
+<!-- In .cshtml -->
+
+<form>
+  <!-- asp-for enables data binding -->
+  <input asp-for="Supplier.CompanyName" />
+</form>
+```
+
+## Configuring services and the HTTP request pipeline
+
+### Reviewing the endpoint routing configuration in our project
+
+![Common methods that register dependency services](images/common-methods-that-register-dependency-services.png)
+
+### Setting up the HTTP pipeline
+
+- **HTTP pipeline** is made up of a connected sequence of **delegates** (aka **middleware**).
+- **Middleware** delegates are configured using one of the following **methods**:
+  - `Run` - **Terminates** the pipeline by immediately returning a response.
+  - `Map` - Creates a branch in the pipeline when there is a **matching request** usually based on a **URL path**.
+  - `Use` - **Forms part** of the pipeline. It can modify the request and response before and after the next delegate.
+- Use `UseMiddleware<T>` to add a **custom middleware** to the pipeline.
+
+### Summarizing key middleware extension methods
+
+- `MapRazorPages` - Map **URL paths** such as `/suppliers` to a **Razor Page** file in the `/Pages` folder named `suppliers.cshtml`.
+- `MapGet` - Map **URL paths** to an **inline delegate**.
+- `UseRouting` - Define **a point in the pipeline where routing decisions are made** and **must** be combined with a call to `UseEndpoints`.
+- `UseEndpoint` - Execute a **controller action** to generate responses.
+
+### Visualizing the HTTP pipeline
+
+![The HTTP request and response pipeline](images/the-http-request-and-response-pipeline.png)
+
+- Middleware that is part of the pipeline **could make changes to the HTTP response** as it flows back through them if needed.
+
+### Middleware Order
+
+- Learn more: [🔗](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/middleware/?view=aspnetcore-8.0#middleware-order)
+
+## Practicing and exploring
+
+### Explore topics
+
+- Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-13---building-websites-using-aspnet-core-razor-pages)
+
+## Building Websites Using the Model-View-Controller Pattern
+
+### Creating an ASP.NET Core MVC website
+
+```bash
+dotnet new mvc [options] [template options]
+```
+
+![Additional switches for the dotnet new mvc project template](images/additional-switches-for-the-dotnet-new-mvc-project-template.png)
+
+### Exploring visitor registration
+
+- **Double-opt-in (DOI)** - Visitors must click a link in the verification email to confirm that they want to register.
+
+### Reviewing an MVC website project structure
+
+- `Areas` - Contains a file needed to integrate your website project with ASP.NET Core Identity.
+- `Data` - Contains EF Core migration classes used by the ASP.NET Core Identity system.
+- `Models` - Contains classes that represent data gathered by a controller and passed to a view (i.e. `HomeIndexViewModel.cs`).
+- Views
+  - Contains `.cshtml` files.
+  - `_ViewStart.cshtml` sets the **default layout**.
+  - `_ViewImports.cshtml` imports **common namespaces** like **tag helpers**.
+  - `Shared` subfolder - Contains two **partial views** for logging in and **validation scripts**.
+- `wwwroot` - Contains **static content**. The template includes `Bootstrap` and `jQuery` libraries.
+- `appsettings.json` and `appsettings.Development.json` - Contain settings that your website can load **at runtime**.
+
+### ASP.NET Core MVC initialization
+
+- `builder` object has two **commonly used** objects:
+  1. `Configuration` - Contains values from **all the places** you could set configuration.
+     - `appsettings.json`
+     - Environment variables
+     - Command-line arguments
+  2. `Services`
+
+```csharp
+// In Program.cs
+
+#region Configure the HTTP request pipeline
+
+if (app.Environment.IsDevelopment())
+{
+  // Enable endpoint for database migration.
+  // Default relative URL path: /ApplyDatabaseMigrations
+  app.UseMigrationsEndpoint();
+}
+
+// ...
+
+// ASP.NET Core Identity uses a Razor Class Library for its UIs.
+app.MapRazorPages();
+
+#endregion
+```
+
+### The default MVC route
+
+```csharp
+app.MapControllerRoute(
+  name: "default",
+  // Segments in URLs are not case-sensitive.
+  // The = assignment sets a default.
+  // The ? symbol makes id optional.
+  pattern: "{controller=Home}/{action=Index}/{id?}");
+```
+
+### The ControllerBase class
+
+![Useful properties for working with the current HTTP context](images/useful-properties-for-working-with-the-current-http-context.png)
+
+### The Controller class
+
+![Useful properties for working with views](images/useful-properties-for-working-with-views.png)
+![Useful methods for working with views](images/useful-methods-for-working-with-views.png)
+
+### The responsibilities of a controller
+
+- **Good Practice:** Controllers should be **thin**, and do not implement any business logic.
+
+### The view search path convention
+
+- Specific Razor view - `/Views/{controller}/{action}.cshtml`
+- Shared Razor view - `/Views/Shared/{action}.cshtml`
+- Shared Razor Page - `/Pages/Shared/{action}.cshtml`
+
+### Using entity and view models
+
+- **View models** should be **immutable**, so they are commonly defined using `records`.
+- **Good Practice:** Recommended **naming convention** for view model:
+  - `{Controller}{Action}ViewModel`
+
+### Implementing views
+
+- In `.cshtml`, the code wrapped in `@{ }` will **execute first** and can be used to store data that needs to be passed into a shared layout file.
+
+```html
+<!-- The ~ means the wwwroot folder. -->
+<link rel="stylesheet" href="~/css/site.css" />
+
+<!-- Example: ASP.NET Core tag helpers -->
+<!-- Use asp-controller and asp-action to navigate between pages. -->
+<!-- Use asp-area to navigate to a feature in a Razor Class Library. -->
+<a asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+```
+
+```csharp
+@section Scripts {
+  // Import scripts that leverage the model validation attributes to enable validation on the client side.
+  <partial name="_ValidationScriptsPartial" />
+}
+```
+
+### How cache busting with Tag Helpers works
+
+```html
+<!-- Cache busting static content. -->
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+```
+
+- `asp-append-version` supports `<link>`, `<img>`, or `<script>` element.
+- Append **query string** named `v` with its value generated from a **SHA256 hash** of the referenced source file.
+- Remote references are **not supported**.
+
+### Defining a typed view
+
+- **Why null check Model?** - It is a common programmer error to pass an object for the model that is null.
+
+### Disambiguating action methods
+
+- By specifying that one method should be used for a specific **HTTP verb** via attributes such as `[HttpPost]`, `[HttpPut]`, and so on.
+
+### Model binders in detail
+
+- Look for parameter values in:
+  - **Route** - `/Home/ProductDetail/2`
+  - **Query string** - `/Home/ProductDetail?id=2`
+  - **Form**:
+    ```html
+    <form action="post" action="/Home/ProductDetail">
+      <input type="text" name="id" value="2" />
+      <input type="submit" />
+    </form>
+    ```
+- Can populate:
+  - Simple types
+  - Complex types
+  - Collection types
+- The **data** and **validation errors** are stored in `ControllerBase.ModelState`.
+
+### Defining views with HTML Helper methods
+
+- Syntax - `@Html.<method>`
+- Useful methods:
+  - `DisplayFor` - Use `DisplayTemplates` to generate HTML markup for an object for display.
+  - `EditorFor` - Use `EditorTemplates` to generate HTML markup for an object for editing, such as form inputs.
+  - `Raw` - Render a string value **without encoding** it as HTML.
+
+### Defining views with Tag Helpers
+
+- _Tag Helpers_ **do not replace** _HTML Helpers_ because there are some things that can only be achieved with _HTML Helpers_.
+
+### Cross-functional filters
+
+- Use **filter attribute** to add functionality to multiple controllers and actions.
+
+```csharp
+// To apply a filter at the global level.
+builder.Services.AddControllersWithViews(options =>
+  {
+    options.Filters.Add(typeof(MyCustomFilter));
+  });
+```
+
+### Using a filter to define a custom route
+
+```csharp
+// URL that matches the route: https://localhost:5141/private
+[Route("private")]
+public IActionResult Privacy()
+```
+
+### Improving performance and scalability using caching
+
+![Types and locations for caching](images/types-and-locations-for-caching.png)
+
+### Caching HTTP responses
+
+- `[ResponseCache]` attribute tells intermediaries like **CDNs** and the **web browser** itself how long they should cache the response for **by adding HTTP headers to the response**.
+- `[ResponseCache]` attribute parameters:
+  - `Duration` - Common choices are **one hour** (3,600 seconds) and **one day** (86,400 seconds).
+  - `Location` - Could be `Any`, `Client`, or `None`.
+  - `NoStore`
+
+### Output caching endpoints
+
+- Store dynamically generated responses **on the server**.
+```csharp
+builder.Services.AddOutputCache(options =>
+{
+  // Default is one minute.
+  options.DefaultExpirationTimeSpan = TimeSpan.FromSeconds(10);
+  // To disable varying by query string parameters, exclude alertStyle parameter.
+  options.AddPolicy("views", p => p.SetVaryByQuery("alertStyle"));
+});
+```
