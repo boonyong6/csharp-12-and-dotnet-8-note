@@ -2078,6 +2078,7 @@ public IActionResult Privacy()
 ### Output caching endpoints
 
 - Store dynamically generated responses **on the server**.
+
 ```csharp
 builder.Services.AddOutputCache(options =>
 {
@@ -2087,3 +2088,244 @@ builder.Services.AddOutputCache(options =>
   options.AddPolicy("views", p => p.SetVaryByQuery("alertStyle"));
 });
 ```
+
+# Chapter 14: Building and Consuming Web Services
+
+## Building web services using the ASP.NET Core Web API
+
+### Understanding HTTP requests and responses for Web APIs
+
+- Common HTTP status code responses to the **`GET` method**:
+  Status code | Description
+  ------------|------------
+  101 Switching Protocols | For example, switching from HTTP to **WebSockets (WS)**.
+  200 OK | Response headers specify the `Content-Type` (aka media type), `Content-Type`, and `Content-Encoding` (i.e. `GZIP`).
+  301 Moved Permanently | To indicate the new resource path by returning a response header named `Location` that has the new path.
+  302 Found | Like 301, except that the resource path is temporarily moved.
+  304 Not Modified | The request includes the `If-Modified-Since` header, and the resource **has not changed** since then.
+  307 Temporary Redirect | The resource has been **temporarily moved** to the URL in the `Location` header. The browser should make a new request using that URL. For example, when using `UseHttpsRedirection` middleware.
+  400 Bad Request | Invalid request.
+  401 Unauthorized | The client is not authenticated.
+  403 Forbidden | The client is not authorized to access.
+  404 Not Found | The resource was not found. To indicate that a resource will **never be found**, return `410 Gone`.
+  406 Not Acceptable | If the request has an `Accept` header that only lists **media types** that the web service **does not support**.
+  500 Server Error | **Something went wrong on the server side** while processing the request.
+  503 Service unavailable | The web service is **busy and cannot handle** the request.
+- **PUT request** - To create a new resource or update an existing resource (aka **upsert** operation).
+- Common HTTP status code responses to **other methods** like `POST` and `PUT`:
+  Status code | Description
+  ------------|------------
+  201 Created | The new resource was created, the response header named `Location` contains its path, and the response body contains the created resource.
+  202 Accepted | The request **cannot be processed immediately** so it is queued. The body can contain a resource that points to a **status checker** or an **estimate of when the resource will become available**.
+  204 No Content | **Commonly used** in response to a `DELETE` request. **Sometimes used** in response to `POST`, `PUT`, or `PATCH` requests if the client **doesn't need to confirm that the request was processed correctly**.
+  405 Method Not Allowed | The request used a method that is not supported.
+  415 Unsupported Media Type | The request body uses a media type that the web service cannot handle.
+
+### Creating an ASP.NET Core Web API project
+
+- Prefix the API controller name with `api/` is a convention to differentiate between MVCs and Web APIs in mixed projects.
+- `[ApiController]` attribute enables REST-specific behavior like automatic HTTP 400 responses for invalid models.
+
+## Creating a web service for the Northwind database
+
+- Four default output formatters configured by `AddControllers` method:
+
+  1. Formatter that **convert null values into 204 No Content**.
+  2. Formatter for **plain text** responses.
+  3. Formatter for **byte streams** responses.
+  4. Formatter for **JSON** responses.
+
+  ```csharp
+  // In Program.cs
+
+  // Place to configure output formatters.
+  builder.Services.AddControllers()
+    .AddXmlSerializerFormatters();
+  ```
+
+### Registering dependency services
+
+- Different lifetimes of dependency services:
+  - Transient - Should be **lightweight** and **stateless**.
+  - Scoped - Created once **per client request**.
+  - Singleton - Created once **per application lifetime**.
+
+```csharp
+// Keyed Services (introduced in .NET 8).
+// In Program.cs
+
+builder.Services.AddKeyedSingleton<IMemoryCache, BigCache>("big");
+builder.Services.AddKeyedSingleton<IMemoryCache, SmallCache>("small");
+
+class BigCacheConsumer([FromKeyedServices("big")] IMemoryCache cache)
+{
+  // ...
+}
+
+class SmallCacheConsumer(IKeyedServiceProvider keyedServiceProvider)
+{
+  IMemoryCache cache = keyedServiceProvider.GetRequiredKeyedService<IMemoryCache>("small");
+  // ...
+}
+```
+
+### Creating data repositories with caching for entities
+
+```csharp
+// Singleton in-memory cache
+// In Program.cs
+
+builder.Services.AddSingleton<IMemoryCache>(
+  new MemoryCache(new MemoryCacheOptions()));
+```
+
+### Routing web services
+
+- Use **HTTP method attributes** to determine the action method to execute.
+- HTTP method attributes:
+  - `[HttpGet]` and `[HttpHead]` - return either the resource and its response headers or just the response headers.
+  - `[HttpPost]` - To create a new resource or perform some other action.
+  - `[HttpPut]` and `[HttpPatch]`
+  - `[HttpDelete]`
+  - `[HttpOptions]`
+
+### Route constraints
+
+- Control route matches based on **data types** and other **validation**.
+  ![Route constraints with examples and descriptions](images/route-constraints-with-examples-and-descriptions.png)
+
+  ```csharp
+  [Route("employees/{years:int:minlength(3)}")]
+  public Employee[] GetLoyalEmployees(int years)
+  ```
+
+- For **regex**, `RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.CultureInvariant` is added automatically.
+- Implement `IRouteConstraint` to create **custom route constraints**. Learn more: [🔗](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-8.0#custom-route-constraints)
+
+### Short-circuit routes in ASP.NET Core 8
+
+- When route matches, invoke the endpoint immediately by skipping the rest of the middleware pipeline and return the response.
+
+  ```csharp
+  app.MapGet("/", () => "Hello World").ShortCircuit();
+
+  // To respond with a status code for resources.
+  app.MapShortCircuit(404, "robots.txt", "favicon.ico");
+  ```
+
+### Understanding action method return types
+
+- An action method can return:
+  - **.NET types** like a single `string` value.
+  - **Complex objects** defined by a `class`, `record`, or `struct`.
+  - **Collections** of complex objects.
+- The HTTP request `Accept` header determines the format (i.e. JSON) to serialize the data.
+- Return `IActionResult` if an action method could **return different types**. This is **more common**.
+- Return `ActionResult<T>` if an action method will **only return a single type**.
+- **Good Practice:** Use `[ProducesResponseType]` attribute to indicate all the known types and HTTP status codes (as part of the formal documentation).
+- `ControllerBase` helper methods:
+  ![ControllerBase helper methods that return a response](images/controllerbase-helper-methods-that-return-a-response.png)
+
+### Configuring the customer repository and Web API controller
+
+```csharp
+// Explicitly name the route, GetCustomer, so that it can be used to generate a URL after inserting a new customer.
+[HttpGet("{id}", Name = nameof(GetCustomer))]
+public async Task<IActionResult> GetCustomer(string id) 
+{ 
+  // ...
+}
+
+[HttpPost]
+public async Task<IActionResult> Create([FromBody] Customer newCustomer)
+{
+  // ...
+
+  return CreatedAtRoute(
+    routeName: nameof(GetCustomer), // <---
+    routeValues: new { id = addedCustomer.CustomerId },
+    value: addedCustomer);
+}
+```
+
+- ASP.NET Core Web API returns `400 Bad Request` response when the **model is invalid**.
+
+### Specifying problem details
+
+- `ProblemDetails` type is an implementation of a **web standard** for specifying problem details.
+- Action methods returning `IActionResult` with a **4xx client error status** will automatically include a serialized `ProblemDetails` instance in the response body.
+
+### Controlling XML serialization
+
+- `XmlSerializer` cannot serialize interfaces, such as `ICollection<T>`.
+```csharp
+[InverseProperty(nameof(Order.Customer))]
+[XmlIgnore] // To exclude the Orders property from XML serialization.
+public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+```
+
+## Documenting and testing web services
+
+### Understanding Swagger
+
+- **OpenAPI Specification** can be used to automatically generate strongly typed **client-side code**.
+
+### Enabling HTTP logging
+
+- Useful when **testing** a web service.
+- It is valuable for auditing and debugging scenarios but it can **negatively impact performance**.
+```csharp
+// In Program.cs
+
+// In the services configuration section.
+builder.Services.AddHttpLogging(options =>
+{
+  options.LoggingFields = HttpLoggingFields.All;
+  options.RequestBodyLogLimit = 4096; // Default is 32k.
+  options.ResponseBodyLogLimit = 4096; // Default is 32k.
+});
+
+// In the HTTP pipeline configuration section, after the call to builder.Build.
+app.UseHttpLogging();
+```
+
+## Consuming web services using HTTP clients
+
+### Understanding HttpClient
+
+- Should use a **single instance** of it during the life of your application.
+
+### Configuring HTTP clients using HttpClientFactory
+
+```csharp
+builder.Services.AddHttpClient(name: "Northwind.WebApi",
+  configureClient: options =>
+  {
+    options.BaseAddress = new Uri("https://localhost:5151/");
+    options.DefaultRequestHeaders.Accept.Add(
+      new MediaTypeWithQualityHeaderValue(
+        mediaType: "application/json", quality: 1.0));
+  });
+```
+
+## Practicing and exploring
+
+### Implementing Open API analyzers and conventions
+
+```xml
+<!-- In .csproj -->
+
+<PropertyGroup>
+  <!-- Enable the OpenAPI Analyzers. -->
+  <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
+</PropertyGroup>
+```
+
+### Building web services using Minimal APIs
+
+- To enable the creation of HTTP APIs with minimum lines of code.
+- For implementing **simple** web services.
+
+### Explore topics
+
+- Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-14---building-and-consuming-web-services)
