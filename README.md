@@ -60,8 +60,8 @@ dotnet sln add HelloCS
 
 ### Notes
 
-- dotnet CLI executes the app from the <projectname> folder.
-- Visual Studio 2022 executes the app from the <projectname>\bin\Debug\net8.0 folder.
+- dotnet CLI executes the app from the <ProjectName> folder.
+- Visual Studio 2022 executes the app from the <ProjectName>\bin\Debug\net8.0 folder.
 
 ### Summary of other project types
 
@@ -541,7 +541,7 @@ public Person this[int index]
 ```csharp
 ImmutableVehicle repaintedCar = car with
 {
-    Color = "Polymetal Grey Metallic"
+    Color = "Poly-metal Grey Metallic"
 };
 ```
 
@@ -2096,30 +2096,10 @@ builder.Services.AddOutputCache(options =>
 ### Understanding HTTP requests and responses for Web APIs
 
 - Common HTTP status code responses to the **`GET` method**:
-  Status code | Description
-  ------------|------------
-  101 Switching Protocols | For example, switching from HTTP to **WebSockets (WS)**.
-  200 OK | Response headers specify the `Content-Type` (aka media type), `Content-Type`, and `Content-Encoding` (i.e. `GZIP`).
-  301 Moved Permanently | To indicate the new resource path by returning a response header named `Location` that has the new path.
-  302 Found | Like 301, except that the resource path is temporarily moved.
-  304 Not Modified | The request includes the `If-Modified-Since` header, and the resource **has not changed** since then.
-  307 Temporary Redirect | The resource has been **temporarily moved** to the URL in the `Location` header. The browser should make a new request using that URL. For example, when using `UseHttpsRedirection` middleware.
-  400 Bad Request | Invalid request.
-  401 Unauthorized | The client is not authenticated.
-  403 Forbidden | The client is not authorized to access.
-  404 Not Found | The resource was not found. To indicate that a resource will **never be found**, return `410 Gone`.
-  406 Not Acceptable | If the request has an `Accept` header that only lists **media types** that the web service **does not support**.
-  500 Server Error | **Something went wrong on the server side** while processing the request.
-  503 Service unavailable | The web service is **busy and cannot handle** the request.
+  ![Common-HTTP-status-code-responses-to-the-GET-method](images/common-http-status-code-responses-to-the-get-method.png)
 - **PUT request** - To create a new resource or update an existing resource (aka **upsert** operation).
 - Common HTTP status code responses to **other methods** like `POST` and `PUT`:
-  Status code | Description
-  ------------|------------
-  201 Created | The new resource was created, the response header named `Location` contains its path, and the response body contains the created resource.
-  202 Accepted | The request **cannot be processed immediately** so it is queued. The body can contain a resource that points to a **status checker** or an **estimate of when the resource will become available**.
-  204 No Content | **Commonly used** in response to a `DELETE` request. **Sometimes used** in response to `POST`, `PUT`, or `PATCH` requests if the client **doesn't need to confirm that the request was processed correctly**.
-  405 Method Not Allowed | The request used a method that is not supported.
-  415 Unsupported Media Type | The request body uses a media type that the web service cannot handle.
+  ![Common HTTP status code responses to other methods like POST and PUT](images/common-http-status-code-responses-to-other-methods-like-post-and-put.png)
 
 ### Creating an ASP.NET Core Web API project
 
@@ -2231,8 +2211,8 @@ builder.Services.AddSingleton<IMemoryCache>(
 ```csharp
 // Explicitly name the route, GetCustomer, so that it can be used to generate a URL after inserting a new customer.
 [HttpGet("{id}", Name = nameof(GetCustomer))]
-public async Task<IActionResult> GetCustomer(string id) 
-{ 
+public async Task<IActionResult> GetCustomer(string id)
+{
   // ...
 }
 
@@ -2258,6 +2238,7 @@ public async Task<IActionResult> Create([FromBody] Customer newCustomer)
 ### Controlling XML serialization
 
 - `XmlSerializer` cannot serialize interfaces, such as `ICollection<T>`.
+
 ```csharp
 [InverseProperty(nameof(Order.Customer))]
 [XmlIgnore] // To exclude the Orders property from XML serialization.
@@ -2274,6 +2255,7 @@ public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
 - Useful when **testing** a web service.
 - It is valuable for auditing and debugging scenarios but it can **negatively impact performance**.
+
 ```csharp
 // In Program.cs
 
@@ -2329,3 +2311,7 @@ builder.Services.AddHttpClient(name: "Northwind.WebApi",
 ### Explore topics
 
 - Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book-links.md#chapter-14---building-and-consuming-web-services)
+
+### Design guidelines
+
+- https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/
