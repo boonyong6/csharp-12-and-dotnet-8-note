@@ -4,7 +4,7 @@
 
 ### Visual Studio Code for cross-platform development
 
-- It has strong support for web development, but weak support for mobile and desktop environments.
+- It has **strong support for web development**, but weak support for mobile and desktop environments.
 
 ### Installing other extensions (Visual Studio Code)
 
@@ -112,7 +112,7 @@ decimal totalPrice = subtotal /* for this item */ + salesTax;
 
 ### Verbatim strings
 
-- Prefix string with @ symbol to prevent escape character (\\) evaluation.
+- Prefix string with **@ symbol** to prevent escape character (\\) evaluation.
 
 ### Raw string literals
 
@@ -128,14 +128,14 @@ string xml = """
 
 ### Comparing double and decimal types
 
-- Never compare double values using ==
+- **Never** compare `double` values using ==.
 - `decimal` stores the number as a large integer and shifts the decimal point.
 
 ### Storing dynamic types
 
 - Its flexibility comes at the cost of performance.
 - The value stored in the variable can have its members invoked without an explicit cast.
-- Dynamic types are most useful when interoperating with non-.NET systems.
+- Dynamic types are most useful when **interoperating** with non-.NET systems.
 
 ### Formatting using interpolated strings
 
