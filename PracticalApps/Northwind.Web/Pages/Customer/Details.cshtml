@@ -1,0 +1,53 @@
+﻿@page
+@model Northwind.Web.Pages.Customer.DetailsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@section Styles {
+    <style>
+        .section {
+            margin-bottom: 1em;
+        }
+    </style>
+}
+
+<a asp-page="List">Customer List</a>
+
+<div class="row">
+    <h1>@ViewData["Title"]</h1>
+    <hr />
+</div>
+
+<div class="row section">
+    <h2>General</h2>
+    <hr />
+    <div class="row">
+        <div class="col-2">Customer Id:</div>
+        <div class="col">@(Model.Customer.CustomerId)</div>
+    </div>
+    <div class="row">
+        <div class="col-2">Company Name:</div>
+        <div class="col">@(Model.Customer.CompanyName)</div>
+    </div>
+</div>
+
+<div class="row section">
+    <h2>Contact Details</h2>
+    <hr />
+    <div class="row">
+        <div class="col-2">Name:</div>
+        <div class="col">@(Model.Customer.ContactName)</div>
+    </div>
+    <div class="row">
+        <div class="col-2">Title:</div>
+        <div class="col">@(Model.Customer.ContactTitle)</div>
+    </div>
+    <div class="row">
+        <div class="col-2">Full Address:</div>
+        <div class="col">@(Model.GetFullAddress(Model.Customer))</div>
+    </div>
+</div>
+
+<div class="row section">
+    <h2>Orders</h2>
+    <hr />
+    <partial name="Order/Shared/_List" model="Model.Customer.Orders" />
+</div>

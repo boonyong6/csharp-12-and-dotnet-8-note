@@ -1,0 +1,65 @@
+﻿@using Northwind.EntityModels
+@model IEnumerable<Customer>
+
+<div class="d-flex mb-3">
+    <div class="flex-grow-1">
+        <form asp-controller="Customers" asp-action="Index" method="get">
+            <div class="row">
+                <div class="col-auto">
+                    <input name="country" placeholder="Enter a country" class="form-control">
+                </div>
+                <div class="col-auto">
+                    <input type="submit" class="btn btn-primary">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div>
+        <a asp-action="Create" class="btn btn-primary">Add Customer</a>
+    </div>
+</div>
+
+<h2>@ViewData["Title"]</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Company Name</th>
+            <th>Contact Name</th>
+            <th>Address</th>
+            <th>Phone</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model is not null)
+        {
+            @foreach (Customer customer in Model)
+            {
+                <tr>
+                    <td>
+                        @(Html.DisplayFor(modelItem => customer.CompanyName))
+                    </td>
+                    <td>
+                        @(Html.DisplayFor(modelItem => customer.ContactName))
+                    </td>
+                    <td>
+                        @(Html.DisplayFor(modelItem => customer.Address))
+                        @(Html.DisplayFor(modelItem => customer.City))
+                        @(Html.DisplayFor(modelItem => customer.Region))
+                        @(Html.DisplayFor(modelItem => customer.Country))
+                        @(Html.DisplayFor(modelItem => customer.PostalCode))
+                    </td>
+                    <td>
+                        @(Html.DisplayFor(modelItem => customer.Phone))
+                    </td>
+                    <td>
+                        <form asp-action="Delete" method="post">
+                            <input name="id" value="@(customer.CustomerId)" hidden>
+                            <input type="submit" value="Delete" class="btn btn-danger">
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

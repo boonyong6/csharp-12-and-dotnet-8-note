@@ -1,0 +1,56 @@
+﻿@page
+@using Northwind.EntityModels
+@model Northwind.Web.Pages.Customer.ListModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+}
+
+<div class="row">
+    <h1 class="display-2">@ViewData["Title"]</h1>
+    <hr />
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" asp-route-pageNumber="1">First</a></li>
+            <li class="page-item">
+                <a class="page-link"
+                    asp-route-pageNumber="@(Model.CurrentPageNumber == 1 ? 1 : Model.CurrentPageNumber - 1)">
+                    Previous
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link"
+                    asp-route-pageNumber="@(Model.CurrentPageNumber == Model.TotalPages ? Model.CurrentPageNumber : Model.CurrentPageNumber + 1)">
+                    Next
+                </a>
+            </li>
+            <li class="page-item"><a class="page-link" asp-route-pageNumber="@(Model.TotalPages)">Last (p. @(Model.TotalPages))</a></li>
+        </ul>
+    </nav>
+
+    @foreach (IGrouping<string?, Customer> customerGroup in Model.CustomerGroups)
+    {
+        <h2>@customerGroup.Key</h2>
+        <hr />
+
+        <table class="table">
+            <thead class="thead-inverse">
+                <tr>
+                    <th class="col-3">Customer Id</th>
+                    <th class="col-9">Company Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Customer customer in customerGroup)
+                {
+                    <tr>
+                        <td>
+                            <a asp-page="Details" asp-route-customerId="@customer.CustomerId">@customer.CustomerId</a>
+                        </td>
+                        <td>@customer.CompanyName</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

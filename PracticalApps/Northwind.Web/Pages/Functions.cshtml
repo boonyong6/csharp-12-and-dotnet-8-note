@@ -1,0 +1,111 @@
+﻿@page
+@using Northwind.Web.Pages
+@model Northwind.Web.Pages.FunctionsModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    ViewData["Title"] = "Some functions from chapter 4: WritingFunctions project";
+}
+
+<h1>Functions</h1>
+<hr>
+
+<form method="post">
+    <div class="row gy-4">
+        <div>
+            <h2>Times Table</h2>
+            <div class="row">
+                <div class="col-6">
+                    <div class="row gy-2">
+                        <div class="col-2">
+                            <label class="form-label" asp-for="TimesTable.Number"></label>
+                            <input class="form-control" asp-for="TimesTable.Number" value="@(Model.TimesTable.Number)">
+                        </div>
+                        <div class="col-2">
+                            <label class="form-label" asp-for="TimesTable.Size"></label>
+                            <input class="form-control" asp-for="TimesTable.Size" value="@(Model.TimesTable.Size)">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    @if (Model.TimesTable.Result.Length > 0)
+                    {
+                        <p class="fw-bold">Result:</p>
+                    }
+
+                    @foreach (string item in Model.TimesTable.Result)
+                    {
+                        <div>@item</div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div>
+            <h2>Calculate Tax</h2>
+            <div class="row">
+                <div class="col-6">
+                    <div class="row gy-2">
+                        <div class="col-4">
+                            <label class="form-label" asp-for="Tax.TaxableAmount"></label>
+                            <input class="form-control" asp-for="Tax.TaxableAmount" value="@(Model.Tax.TaxableAmount)">
+                        </div>
+                        <div class="col-4">
+                            <label class="form-label" asp-for="Tax.TwoLetterRegionCode"></label>
+                            <input class="form-control" asp-for="Tax.TwoLetterRegionCode"
+                                value="@(Model.Tax.TwoLetterRegionCode)">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    @if (Model.Tax.Amount > 0)
+                    {
+                        <p class="fw-bold">Result:</p>
+                        <p>@(Model.Tax.Amount.ToString("$#,##0.00"))</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div>
+            <h2>Factorial</h2>
+            <div class="row">
+                <div class="col-6">
+                    <div class="row gy-2">
+                        <div class="col-4">
+                            <label class="form-label" asp-for="Factorial.Number"></label>
+                            <input class="form-control" asp-for="Factorial.Number" value="@(Model.Factorial.Number)">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    @if (Model.Factorial.Result > 0)
+                    {
+                        <p class="fw-bold">Result:</p>
+                        <p>@(Model.Factorial.Result.ToString("N0"))</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div>
+            <h2>Fibonacci</h2>
+            <div class="row">
+                <div class="col-6">
+                    <div class="row gy-2">
+                        <div class="col-4">
+                            <label class="form-label" asp-for="Fibonacci.Number"></label>
+                            <input class="form-control" asp-for="Fibonacci.Number" value="@(Model.Fibonacci.Number)">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    @if (Model.Fibonacci.Result > 0)
+                    {
+                        <p class="fw-bold">Result:</p>
+                        <p>@(Model.Fibonacci.Result.ToString("N0"))</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div>
+            <input class="btn btn-primary" type="submit">
+        </div>
+    </div>
+</form>

@@ -1,0 +1,26 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C#: Northwind.WebApi Debug",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/Northwind.WebApi/Northwind.WebApi.csproj",
+        },
+        {
+            "name": "C#: Northwind.Mvc Debug",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/Northwind.Mvc/Northwind.Mvc.csproj",
+        }
+    ],
+    "compounds": [
+        {
+            "name": "WebApi/Mvc",
+            "configurations": ["C#: Northwind.WebApi Debug", "C#: Northwind.Mvc Debug"]
+        }
+    ]
+}

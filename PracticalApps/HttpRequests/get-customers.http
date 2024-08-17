@@ -1,0 +1,19 @@
+### Configure a variable for the web service base address.
+@base_address = https://localhost:5151/api/customers/
+
+### Make a GET request to the base address.
+GET {{base_address}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImJvb255Iiwic3ViIjoiYm9vbnkiLCJqdGkiOiIzZjk5ODc5OSIsImF1ZCI6WyJodHRwOi8vbG9jYWxob3N0OjQ3OTg5IiwiaHR0cHM6Ly9sb2NhbGhvc3Q6NDQzMzYiLCJodHRwOi8vbG9jYWxob3N0OjUxOTQiLCJodHRwczovL2xvY2FsaG9zdDo1MTUxIiwiaHR0cDovL2xvY2FsaG9zdDo1MTUwIl0sIm5iZiI6MTcyMzQ3MjE0OCwiZXhwIjoxNzMxNDIwOTQ4LCJpYXQiOjE3MjM0NzIxNDksImlzcyI6ImRvdG5ldC11c2VyLWp3dHMifQ.pZI-rPwkT5aaE8yCVbgk_Y2vxVAfHYySalj84vnLsVw
+
+### Get customers in Germany
+GET {{base_address}}?country=Germany
+
+### Get customers in USA in XML format
+GET {{base_address}}?country=USA
+Accept: application/xml
+
+### Get Alfreds Futterkiste
+GET {{base_address}}ALFKI
+
+### Get a non-existent customer
+GET {{base_address}}abcxy

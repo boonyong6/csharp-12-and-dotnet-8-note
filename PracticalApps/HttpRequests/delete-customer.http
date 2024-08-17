@@ -1,0 +1,5 @@
+### Configure a variable for the web service base address.
+@base_address = https://localhost:5151/api/customers/
+
+### Delete an existing customer.
+DELETE {{base_address}}abcxy

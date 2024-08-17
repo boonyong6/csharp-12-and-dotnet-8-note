@@ -1,0 +1,37 @@
+### Configure a variable for the web service base address.
+@base_address = https://localhost:5151/api/customers/
+
+### Update an existing customer.
+PUT {{base_address}}ABCXY
+Content-Type: application/json
+
+{
+    "customerID": "ABCXY",
+    "companyName": "ABC Corp",
+    "contactName": "JOHN CENA",
+    "contactTitle": "Sir",
+    "address": "Sub Street",
+    "city": "New York",
+    "region": "NY",
+    "postalCode": "66666",
+    "country": "USA",
+    "phone": "(123) 456-7890"
+}
+
+### Update a non-existent customer.
+PUT {{base_address}}abcde
+Content-Type: application/json
+
+{
+    "customerID": "abcde",
+    "companyName": "NIL"
+}
+
+### Malformed request (mismatch customer id)
+PUT {{base_address}}fghij
+Content-Type: application/json
+
+{
+    "customerID": "abcde",
+    "companyName": "ABC Corp"
+}
