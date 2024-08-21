@@ -514,8 +514,8 @@ dotnet add reference <PROJECT_NAME>
 
 ### Storing multiple values using an enum type
 
-- We can combine multiple choices into a single value using `enum` flags.
-- Use the | operator (the bitwise logical OR) to combine the `enum` values.
+- We can combine multiple choices into a single value using `enum` flags, `[Flags]`.
+- Use the `|` operator (the **bitwise** logical OR) to combine the `enum` values.
 
 ### Making a field static
 
@@ -532,7 +532,7 @@ dotnet add reference <PROJECT_NAME>
 - A better choice for fields that should not change is to mark them as read-only.
 - Use read-only fields over constant fields.
 - It can be expressed using any executable statement.
-- It is a live reference.
+- It is a **live reference**.
 
 ### Requiring fields to be set during instantiation
 
@@ -589,7 +589,7 @@ public Person this[int index]
 
 ### Init-only properties
 
-- Use the `init` keyword to make a property immutable. It can be used in place of the `set` keyword in a property definition.
+- Use the `init` keyword to make a property **immutable**. It can be used in place of the `set` keyword in a property definition.
 
 ### Defining record types
 
