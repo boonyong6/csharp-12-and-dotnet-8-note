@@ -1,5 +1,4 @@
-using CalculatorLib;
-using Xunit.Sdk; // To use Calculator.
+using CalculatorLib; // To use Calculator.
 
 namespace CalculatorLibUnitTests;
 
