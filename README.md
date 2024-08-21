@@ -176,12 +176,12 @@ int a = 3;
 int b = a++; // b is 3
 ```
 
-- **Good Practice:** Never combine the use of the ++ and -- operators with an assignment operator, =. Perform the operations as separate statements.
+- **Good Practice:** Never combine the use of the `++` and `--` operators with an assignment operator, `=`. Perform the operations as separate statements.
 
 ### Exploring logical operators (&, |, ^)
 
 - Operate on **`Boolean`** values.
-- For the **XOR ^** logical operator, either operand can be true **(but not both)** for the result to be true.
+- For the **XOR `^`** logical operator, either operand can be true **(but not both)** for the result to be true.
 
 ### Exploring conditional logical operators (&&, ||)
 
@@ -189,7 +189,7 @@ int b = a++; // b is 3
 
 ### Exploring bitwise and binary shift operators (&, |, <<, >>)
 
-- Binary shift operators **(<<, >>)** can perform some common arithmetic calculations (e.g. x \* 2, x / 2) much faster than traditional operators.
+- Binary shift operators **(`<<`, `>>`)** can perform some common arithmetic calculations (e.g. x \* 2, x / 2) much faster than traditional operators.
 
 ## Understanding selection statements
 
@@ -357,13 +357,13 @@ double g = 9.8;
 int h = Convert.ToInt32(g); // Using the System.Convert.
 ```
 
-- Important differences between casting and converting:
+- **Important differences** between casting and converting:
   - Converting rounds the double value 9.8 up to 10 instead of trimming the part after the decimal point.
   - Casting can allow overflows while converting will throw an exception.
 
 ### Rounding numbers and the default rounding rules
 
-- **System.Convert**'s rounding rule is the **Banker's rounding**. This rule reduces bias by alternating when it rounds toward or away from zero.
+- **`System.Convert`**'s rounding rule is the **Banker's rounding**. This rule reduces bias by alternating when it rounds toward or away from zero.
 
 ### Converting from a binary object to a string
 
@@ -436,6 +436,8 @@ dotnet watch [run]
 
 ### Configuring trace listeners
 
+- **Code References:** [🔗](https://github.com/boonyong6/csharp-12-and-dotnet-8-note/blob/581feb9cc596365de2fb7a0bb8a51801ab69b737/Chapter04/Instrumenting/Program.cs#L10)
+
 ```bash
 # With the Debug configuration, both Debug and Trace are active and will write to any trace listeners.
 # With the Release configuration, only Trace will write to any trace listeners.
@@ -456,6 +458,7 @@ dotnet add reference <PROJECT_NAME>
 
 - In C# 10 and later, you can get more logging information from the compiler by decorating function parameters with special attributes.
   ![Attributes to get information about the method caller](images/attributes-to-get-information-about-the-method-caller.png)
+- **Code References:** [🔗](https://github.com/boonyong6/csharp-12-and-dotnet-8-note/blob/581feb9cc596365de2fb7a0bb8a51801ab69b737/Chapter04/Instrumenting/Program.Functions.cs)
 
 ## Unit testing
 
