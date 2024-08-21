@@ -108,7 +108,7 @@ byte[] binaryObject = new byte[128];
 // Populate the array with random bytes.
 Random.Shared.NextBytes(binaryObject);
 
-WriteLine("Binary Object as btyes:");
+WriteLine("Binary Object as bytes:");
 for (int index = 0; index < binaryObject.Length; index++)
 {
     Write($"{binaryObject[index]:X2} ");

@@ -1,5 +1,4 @@
-﻿#region Working with single-dimensional arryas
-
+﻿#region Working with single-dimensional arrays
 
 string[] names; // This can reference any size array of strings.
 
@@ -24,7 +23,7 @@ for (int i = 0; i < names.Length; i++)
 
 #endregion
 
-#region Working with multi-dimensional arryas
+#region Working with multi-dimensional arrays
 
 WriteLine();
 

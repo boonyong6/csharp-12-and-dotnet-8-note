@@ -32,7 +32,7 @@ foreach (AssemblyName name in myApp.GetReferencedAssemblies())
         methodCount += t.GetMethods().Length;
     }
 
-    // Output the count of tyepes and their methods.
+    // Output the count of types and their methods.
     // N0 formats a number with zero decimal places.
     WriteLine("{0:N0} types with {1:N0} methods in {2} assembly.",
         arg0: a.DefinedTypes.Count(),

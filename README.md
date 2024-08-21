@@ -81,7 +81,7 @@ dotnet sln add HelloCS
 
 ### Enabling a specific language version compiler
 
-To use the improvements in a **C# point release** like 7.1, 7.2, or 7.3, you had to add a \<LangVersion> configuration element to the project file.
+To use the improvements in a **C# point release** like 7.1, 7.2, or 7.3, you had to add a `<LangVersion>` configuration element to the project file.
 
 ```xml
 <LangVersion>7.3</LangVersion>
@@ -112,7 +112,7 @@ decimal totalPrice = subtotal /* for this item */ + salesTax;
 
 ### Verbatim strings
 
-- Prefix string with **@ symbol** to prevent escape character (\\) evaluation.
+- Prefix string with **`@` symbol** to prevent **escape character (`\`)** evaluation.
 
 ### Raw string literals
 
@@ -151,7 +151,7 @@ string xml = """
 
 ### Simplifying the usage of the console
 
-- using statement can be used to import a static class.
+- `using` statement can be used to import a static class.
 
 ### Passing arguments to a console app
 
@@ -180,7 +180,7 @@ int b = a++; // b is 3
 
 ### Exploring logical operators (&, |, ^)
 
-- Operate on **Boolean** values.
+- Operate on **`Boolean`** values.
 - For the **XOR ^** logical operator, either operand can be true **(but not both)** for the result to be true.
 
 ### Exploring conditional logical operators (&&, ||)
@@ -210,6 +210,30 @@ if (o is int i)
 
 - **Good Practice:** The `goto` keyword can be a good solution to code logic in some scenarios. But, you **should use it sparingly**.
 
+```csharp
+switch (number)
+{
+  case 1:
+    WriteLine("One");
+    break; // Jumps to end of switch statement.
+  case 2:
+    WriteLine("Two");
+    goto case 1;
+  case 3: // Multiple case section.
+  case 4:
+    WriteLine("Three or four");
+    goto case 1;
+  case 5:
+      goto A_label;
+  default:
+      WriteLine("Default");
+      break;
+} // End of switch statement.
+WriteLine("After end of switch");
+A_label:
+WriteLine($"After A_label");
+```
+
 ### Pattern matching with the switch statement
 
 - The `switch` statement supports pattern matching.
@@ -234,7 +258,25 @@ switch(animal)
 
 ### Simplifying switch statements with switch expressions
 
-- Switch expressions can be used where **all cases return a value to set a single variables**. It uses a **lambda**, **=>**, to indicate a **return value**.
+- **Switch expressions** can be used where **all cases return a value to set a single variables**. It uses a **lambda**, **=>**, to indicate a **return value**.
+
+```csharp
+string message = animal switch
+{
+  Cat { Legs: 4 } fourLeggedCat
+    => $"The cat named {fourLeggedCat.Name} has four legs.",
+  Cat wildCat when wildCat.IsDomestic == false
+    => $"The non-domestic cat is named {wildCat.Name}.",
+  Cat cat
+    => $"The cat is named {cat.Name}",
+  Spider spider when spider.IsPoisonous
+    => $"The {spider.Name} spider is poisonous. Run!",
+  null
+    => "The animal is null.",
+  _
+    => $"{animal.Name} is a {animal.GetType().Name}"
+};
+```
 
 ## Understanding iteration statements
 
@@ -278,6 +320,21 @@ int lastIndex = mdArray.GetUpperBound(0);
 ### List pattern matching with arrays
 
 ![Examples of list pattern matching](images/examples-of-list-pattern-matching.png)
+
+```csharp
+static string CheckSwitch(int[] values) => values switch
+{
+  [] => "Empty array",
+  [1, 2, _, 10] => "Contains 1, 2, any single number, 10.",
+  [1, 2, .., 10] => "Contains 1, 2, any range including empty, 10.",
+  [1, 2] => "Contains 1 then 2.",
+  [int item1, int item2, int item3] => $"Contains {item1} then {item2} then {item3}.",
+  [0, _] => "Starts with 0, then one other number.",
+  [0, ..] => "Starts with 0, then any range of numbers.",
+  [2, .. int[] others] => $"Starts with 2, then {others.Length} more numbers.",
+  [..] => "Any items in any order.",
+};
+```
 
 ### Summarizing arrays
 
