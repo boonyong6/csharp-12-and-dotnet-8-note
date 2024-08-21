@@ -67,7 +67,7 @@ dotnet sln add HelloCS
 
 ![Project template names for various code editors](images/project-template-names-for-various-code-editors.png)
 
-- Summary of project template defaults, options, and switches: [🔗](https://githu6.com/markjprice/cs12dotnet8/blob/main/docs/ch01-project-options.md)
+- Summary of project template defaults, options, and switches: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/ch01-project-options.md)
 
 ## Practicing and exploring
 
