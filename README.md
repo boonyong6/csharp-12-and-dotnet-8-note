@@ -759,7 +759,7 @@ Shout?.Invoke(this, EventArgs.Empty);
 
 ### Defining struct types
 
-- You cannot compare struct variables using ==.
+- You cannot compare struct variables using `==`.
 - Use `struct` when
   - The total memory used by all the fields is **16 bytes or less**.
   - Only uses value types for its fields.
@@ -772,12 +772,12 @@ Shout?.Invoke(this, EventArgs.Empty);
 ### Defining record struct types
 
 - `record struct` is not immutable.
-- A `struct` does not implement the == and != operators, but they are automatically implemented with a `record struct`.
+- A `struct` does not implement the `==` and `!=` operators, but they are automatically implemented with a `record struct`.
 
 ### Releasing unmanaged resources
 
 - It must be manually released.
-- Each type can have a single finalizer to release unmanaged resources.
+- Each type can have a single **finalizer** to release unmanaged resources.
 
 ```csharp
 public class ObjectWithUnmanagedResources : IDisposable
@@ -848,7 +848,7 @@ WriteLine(lastName.Length);
 
 ### Declaring non-nullable variables and parameters
 
-- Suffixing a reference type with ? does not change the type. This is different from suffixing a value type with ?, which changes its type to Nullable<T>.
+- Suffixing a **reference type** with `?` does not change the type. This is different from suffixing a **value type** with `?`, which changes its type to `Nullable<T>`.
 
 ## Inheriting from classes
 
@@ -859,8 +859,8 @@ WriteLine(lastName.Length);
 
 ### Choosing between an interface and abstract class
 
-- Every member of an interface must be public.
-- An abstract class has more flexibility in its members' access modifiers.
+- Every member of an interface must be `public`.
+- An `abstract` class has more flexibility in its members' access modifiers.
 
 ### Understanding polymorphism
 
@@ -890,6 +890,17 @@ Employee? aliceAsEmployee = aliceToPerson as Employee;
 
 - Constructors are not inherited.
 - **Good Practice:** When defining your own exceptions, give them the same three constructors that explicitly call the built-in ones in `System.Exception`.
+  ```csharp
+  public class PersonException : Exception
+  {
+    public PersonException() : base() { }
+
+    public PersonException(string message) : base(message) { }
+
+    public PersonException(string message, Exception innerException) 
+      : base(message, innerException) { }
+  }
+  ```
 
 ### Using extension methods to reuse functionality
 
@@ -898,6 +909,7 @@ Employee? aliceAsEmployee = aliceToPerson as Employee;
 ### Mutability and records
 
 - The mutability of a record type depends on how the record is defined.
+- **Code References:** [🔗](https://github.com/boonyong6/csharp-12-and-dotnet-8-note/blob/main/Chapter06/PacktLibrary/Mutability.cs)
 
 ## Writing better code
 
@@ -1038,7 +1050,7 @@ dotnet new buildprops --use-artifacts
 ### Enabling native AOT for a project
 
 ```xml
-<!-- In .csproj -->
+<!-- In .csproj file -->
 <PublishAot>true</PublishAot>
 ```
 
@@ -1115,7 +1127,7 @@ Random r = new(Seed: 46378);
 
 ![Common regular expression qualifiers](images/common-regular-expression-qualifiers.png)
 
-- \* - zero or more
+- `*` - zero or more
 
 ### Activating regular expression syntax coloring
 
