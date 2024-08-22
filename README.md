@@ -1152,7 +1152,7 @@ partial class Program
 Regex ageChecker = new(DigitsOnlyText, RegexOptions.Compiled);
 ```
 
-- .NET 7 introduced a source generator for regular expressions.
+- .NET 7 introduced a **source generator** for regular expressions.
 
 ```csharp
 using System.Text.RegularExpressions;
@@ -1192,7 +1192,7 @@ public interface ICollection : IEnumerable
 
 ### Sets, stacks, and queues
 
-- **Sets** are good choice when you want to perform set operations between two collections.
+- **Sets** are good choice when you want to perform **set operations** between two collections.
 - **Stacks** are good choice when you want to implement **last-in, first-out (LIFO)** behavior.
 - **Queues** are good choice when you want to implement **first-in, first-out (FIFO)** behavior.
 
@@ -1256,15 +1256,16 @@ Learn more: [🔗](https://github.com/markjprice/cs12dotnet8/blob/main/docs/book
 
 - To manage directories, use the `Directory`, `Path`, and `Environment` static classes.
 - When constructing custom paths, makes no assumptions about the platform.
+- **Code References:** [🔗](https://github.com/boonyong6/csharp-12-and-dotnet-8-note/blob/main/Chapter09/WorkingWithFileSystems/Program.cs)
 
 ### Managing paths
 
 ```csharp
 // Create a zero-byte file and returns its name.
-string tempFile = GetTempFileName();
+string tempFile = Path.GetTempFileName();
 
 // Doesn't create the file.
-string randomFileName = GetRandomFileName();
+string randomFileName = Path.GetRandomFileName();
 ```
 
 ### Getting file information
@@ -1309,6 +1310,7 @@ bool isCompressed = info.Attributes.HasFlag(FileAttributes.Compressed);
 
 - Cannot exist on their own but can only be "plugged into" other streams to add functionality.
   ![Function stream classes](images/function-stream-classes.png)
+- **Code References:** [🔗](https://github.com/boonyong6/csharp-12-and-dotnet-8-note/blob/main/Chapter09/WorkingWithStreams/Program.Compress.cs)
 
 ### Understanding stream helpers
 
@@ -1337,6 +1339,7 @@ using StreamWriter writer = new(file);
 - You would use serialization **to save the current state of a live object**.
 - Two most common **text-based formats** are **XML** and **JSON**.
 - A more efficient binary formats like Protobuf used by gRPC.
+- **Code References:** [🔗](https://github.com/boonyong6/csharp-12-and-dotnet-8-note/blob/main/Chapter09/WorkingWithSerialization/Program.cs)
 
 ### Serializing as XML
 
