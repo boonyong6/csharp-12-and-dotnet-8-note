@@ -1442,7 +1442,7 @@ modelBuilder.Entity<Product>()
   .HasMaxLength(40);
 ```
 
-- Keeps the entity model class
+- Keeps the entity model class simpler.
 
 ### Understanding data seeding with the Fluent API
 
