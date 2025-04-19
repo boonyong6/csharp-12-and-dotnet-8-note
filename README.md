@@ -890,6 +890,7 @@ Employee? aliceAsEmployee = aliceToPerson as Employee;
 
 - Constructors are not inherited.
 - **Good Practice:** When defining your own exceptions, give them the same three constructors that explicitly call the built-in ones in `System.Exception`.
+
   ```csharp
   public class PersonException : Exception
   {
@@ -897,7 +898,7 @@ Employee? aliceAsEmployee = aliceToPerson as Employee;
 
     public PersonException(string message) : base(message) { }
 
-    public PersonException(string message, Exception innerException) 
+    public PersonException(string message, Exception innerException)
       : base(message, innerException) { }
   }
   ```
@@ -1376,7 +1377,7 @@ public string? FirstName { get; set; }
 
 ### launchSettings.json
 
-- Can be manually created in the \<ProjectDirectory>/Properties folder.
+- Can be manually created in the `<ProjectDirectory>/Properties` folder.
 - Environment variables are set at **process scope**.
 - Example:
 
@@ -1660,6 +1661,26 @@ protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 }
 ```
+
+#### A scenario using default tracking
+
+- **Change tracking** with identity resolution.
+- Once an entity is loaded, **underlying changes are not reflected** and only **one copy** exists.
+
+![default-tracking-scenario](images/default-tracking-scenario.png)
+
+#### The same scenario using no tracking
+
+- **No tracking** and no identity resolution.
+- **Every query loads another instance**, including underlying changes, allowing **duplicates**.
+
+![no-tracking-scenario](images/no-tracking-scenario.png)
+
+#### The same scenario using no tracking with identity resolution
+
+- Similar to default tracking except `SaveChanges` does nothing.
+
+![identity-resolution-scenario](images/identity-resolution-scenario.png)
 
 ### Lazy loading for no tracking queries
 
