@@ -1694,7 +1694,7 @@ protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 
 ### More efficient updates and deletes
 
-- EF Core 7 introduced `ExecuteDelete` and `ExecuteUpdate` method that are more efficient because they do not require entities to be loaded into memory an have their changes tracked.
+- EF Core 7 introduced `ExecuteDelete` and `ExecuteUpdate` method that are more efficient because they do not require entities to be loaded into memory and have their changes tracked.
 - `ExecuteDelete` and `ExecuteUpdate` can only act on a single table.
 - **Warning!** If you mix traditional tracked changes with `ExecuteDelete` and `ExecuteUpdate` methods, note that they are not kept synchronized. The change tracker will not know what you have updated and deleted using those methods.
 
